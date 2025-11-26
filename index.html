@@ -56,6 +56,7 @@
       color: #e0e0e0;
       margin: 0;
       font-size: 1.6rem;
+      cursor: pointer; /* Indicates clickable */
     }
 
     .main-layout {
@@ -342,7 +343,7 @@
     <button id="sidebarToggle" title="Toggle sidebar (Ctrl+E)">
       <i class="fas fa-bars"></i>
     </button>
-    <h1><i class="fas fa-graduation-cap me-2"></i>Learning Center</h1>
+    <h1 id="headerTitle"><i class="fas fa-graduation-cap me-2"></i>Learning Center</h1>
   </div>
 
   <div class="main-layout" id="mainLayout">
@@ -422,6 +423,7 @@
     const submitPassword = document.getElementById('submitPassword');
     const cancelPassword = document.getElementById('cancelPassword');
     const passwordError = document.getElementById('passwordError');
+    const headerTitle = document.getElementById('headerTitle');
 
     let pendingVideo = null;
     let activeItem = null;
@@ -433,7 +435,7 @@
       allCategoriesState[cat] = false;
     });
 
-    // Toggle sidebar function
+    // Toggle sidebar
     function toggleSidebar() {
       sidebarVisible = !sidebarVisible;
       sidebar.classList.toggle('hidden', !sidebarVisible);
@@ -449,7 +451,6 @@
       }
     }
 
-    // Button click
     sidebarToggle.addEventListener('click', toggleSidebar);
 
     // Keyboard shortcut: Ctrl+E
@@ -459,7 +460,6 @@
         toggleSidebar();
       }
 
-      // Escape for modal
       if (e.key === 'Escape') {
         if (passwordModal.style.display === 'flex') {
           passwordModal.style.display = 'none';
@@ -467,6 +467,44 @@
         }
       }
     });
+
+    // Reset page function
+    function resetPage() {
+      searchBox.value = '';
+      clearSearchBtn.style.display = 'none';
+      
+      allCats.forEach(cat => {
+        allCategoriesState[cat] = false;
+      });
+      
+      renderGroupedList(videos, false);
+      
+      if (activeItem) {
+        activeItem.classList.remove('active');
+        activeItem = null;
+      }
+      
+      videoFrame.src = '';
+      currentTitle.textContent = 'Lesson Details';
+      currentSource.textContent = '';
+      videoContainer.classList.remove('video-active');
+      
+      passwordModal.style.display = 'none';
+      pendingVideo = null;
+      
+      if (!sidebarVisible) {
+        sidebarVisible = true;
+        sidebar.classList.remove('hidden');
+        mainLayout.classList.remove('centered');
+        const icon = sidebarToggle.querySelector('i');
+        icon.className = 'fas fa-bars';
+        sidebarToggle.title = 'Toggle sidebar (Ctrl+E)';
+      }
+      
+      searchBox.focus();
+    }
+
+    headerTitle.addEventListener('click', resetPage);
 
     // --- Video logic ---
     function getYouTubeId(url) {
