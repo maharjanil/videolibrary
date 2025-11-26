@@ -43,7 +43,6 @@
       width: 100%;
     }
 
-    /* Left Sidebar */
     .title-sidebar {
       width: 300px;
       background: #1a1a1a;
@@ -103,21 +102,18 @@
       padding: 0.5rem 0;
       overflow-y: auto;
       flex: 1;
-      /* Custom scrollbar */
-      scrollbar-width: thin; /* Firefox */
+      scrollbar-width: thin;
       scrollbar-color: #000 #222;
     }
 
-    /* WebKit browsers (Chrome, Edge, Safari) */
     .title-list::-webkit-scrollbar {
       width: 8px;
     }
     .title-list::-webkit-scrollbar-track {
       background: #1a1a1a;
-      border-radius: 4px;
     }
     .title-list::-webkit-scrollbar-thumb {
-      background: #000; /* 🔥 Black thumb */
+      background: #000;
       border-radius: 4px;
     }
     .title-list::-webkit-scrollbar-thumb:hover {
@@ -158,7 +154,9 @@
 
     .category-items {
       overflow: hidden;
-      transition: max-height 0.3s ease, padding 0.3s ease;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+      max-height: 0;
+      padding: 0;
     }
 
     .title-item {
@@ -191,7 +189,6 @@
       color: #d97706;
     }
 
-    /* Right Panel */
     .video-panel {
       flex: 1;
       background: #1a1a1a;
@@ -228,6 +225,18 @@
       align-items: center;
       padding: 1rem;
       background: #0f0f0f;
+      position: relative;
+    }
+
+    .video-placeholder {
+      color: #666;
+      font-style: italic;
+      text-align: center;
+      max-width: 80%;
+    }
+
+    .video-container.video-active .video-placeholder {
+      display: none;
     }
 
     .video-container iframe {
@@ -237,9 +246,13 @@
       max-height: 540px;
       border-radius: 8px;
       border: none;
+      display: none;
     }
 
-    /* Password Modal */
+    .video-container.video-active iframe {
+      display: block;
+    }
+
     #passwordModal {
       display: none;
       position: fixed;
@@ -305,16 +318,18 @@
 
     <div class="video-panel">
       <div class="video-header">
-        <h2 id="currentTitle">Select a lesson to begin</h2>
+        <h2 id="currentTitle">Lesson Details</h2>
         <div class="source" id="currentSource"></div>
       </div>
-      <div class="video-container">
+      <div class="video-container" id="videoContainer">
+        <div class="video-placeholder">
+          Select a lesson to begin
+        </div>
         <iframe id="videoFrame" allowfullscreen></iframe>
       </div>
     </div>
   </div>
 
-  <!-- Password Modal -->
   <div id="passwordModal">
     <div class="modal-content">
       <h5 class="mb-3"><i class="fas fa-lock me-2"></i>Enter Password</h5>
@@ -346,13 +361,13 @@
 
     const VIDEO_PASSWORD = "Animator";
 
-    // DOM
     const searchBox = document.getElementById('searchBox');
     const clearSearchBtn = document.getElementById('clearSearch');
     const titleList = document.getElementById('titleList');
     const currentTitle = document.getElementById('currentTitle');
     const currentSource = document.getElementById('currentSource');
     const videoFrame = document.getElementById('videoFrame');
+    const videoContainer = document.getElementById('videoContainer');
     const passwordModal = document.getElementById('passwordModal');
     const videoPassword = document.getElementById('videoPassword');
     const submitPassword = document.getElementById('submitPassword');
@@ -361,9 +376,13 @@
 
     let pendingVideo = null;
     let activeItem = null;
-    let allCategoriesState = {}; // categoryName → isExpanded (bool)
+    let allCategoriesState = {};
 
-    // Helpers
+    const allCats = [...new Set(videos.map(v => v.category || "Uncategorized"))];
+    allCats.forEach(cat => {
+      allCategoriesState[cat] = false;
+    });
+
     function getYouTubeId(url) {
       const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
       const match = url.match(regExp);
@@ -384,23 +403,29 @@
       return type === "youtube" ? "YouTube" : "Google Drive";
     }
 
+    // ✅ FIXED: Standalone video loader
     function loadVideo(video) {
       const embedUrl = getEmbedUrl(video);
       if (embedUrl) {
         currentTitle.textContent = video.title;
         currentSource.textContent = `Source: ${getSourceLabel(video.type)}`;
         videoFrame.src = embedUrl;
+        videoContainer.classList.add('video-active');
       } else {
         currentTitle.textContent = "Error loading video";
         currentSource.textContent = "";
         videoFrame.src = "";
+        videoContainer.classList.remove('video-active');
       }
     }
 
+    // ✅ FIXED: Handles protected vs normal
     function selectVideo(video, element) {
       if (activeItem) activeItem.classList.remove('active');
-      element.classList.add('active');
-      activeItem = element;
+      if (element) {
+        element.classList.add('active');
+        activeItem = element;
+      }
 
       if (video.protected) {
         pendingVideo = video;
@@ -413,75 +438,113 @@
       }
     }
 
-    function toggleCategory(header, itemsContainer, chevron) {
-      const isExpanded = itemsContainer.style.maxHeight && itemsContainer.style.maxHeight !== '0px';
+    function toggleCategory(header, itemsContainer, chevron, categoryName) {
+      const isExpanded = allCategoriesState[categoryName];
       if (isExpanded) {
         itemsContainer.style.maxHeight = '0px';
         itemsContainer.style.padding = '0';
         chevron.classList.remove('rotated');
-        allCategoriesState[header.dataset.category] = false;
+        allCategoriesState[categoryName] = false;
       } else {
-        const itemCount = itemsContainer.children.length;
-        const itemHeight = 42; // approx height per item (including padding)
-        itemsContainer.style.maxHeight = (itemCount * itemHeight) + 'px';
+        itemsContainer.style.display = 'block';
+        const realHeight = itemsContainer.scrollHeight;
+        itemsContainer.style.display = '';
+        itemsContainer.style.maxHeight = realHeight + 'px';
         itemsContainer.style.padding = '0.2rem 0';
         chevron.classList.add('rotated');
-        allCategoriesState[header.dataset.category] = true;
+        allCategoriesState[categoryName] = true;
       }
     }
 
-    function renderGroupedList(videoList, searchTerm = '') {
-      const grouped = {};
-      videoList.forEach(v => {
-        const cat = v.category || "Uncategorized";
-        if (!grouped[cat]) grouped[cat] = [];
-        grouped[cat].push(v);
-      });
+    function renderGroupedList(videoList, isSearching = false) {
+      if (isSearching) {
+        const grouped = {};
+        videoList.forEach(v => {
+          const cat = v.category || "Uncategorized";
+          if (!grouped[cat]) grouped[cat] = [];
+          grouped[cat].push(v);
+        });
 
-      titleList.innerHTML = '';
-      const categories = Object.keys(grouped).sort();
+        titleList.innerHTML = '';
+        const categories = Object.keys(grouped).sort();
 
-      categories.forEach(cat => {
-        const shouldExpand = searchTerm ? true : (allCategoriesState[cat] !== false); // default: expanded
+        categories.forEach(cat => {
+          const header = document.createElement('div');
+          header.className = 'category-header';
+          header.innerHTML = `<i class="fas fa-chevron-right chevron rotated"></i> ${cat} <span class="text-muted ms-2">(${grouped[cat].length})</span>`;
+          titleList.appendChild(header);
 
-        const header = document.createElement('div');
-        header.className = 'category-header';
-        header.dataset.category = cat;
-        header.innerHTML = `<i class="fas fa-chevron-right chevron ${shouldExpand ? 'rotated' : ''}"></i> ${cat}`;
-        titleList.appendChild(header);
-
-        const itemsContainer = document.createElement('div');
-        itemsContainer.className = 'category-items';
-        if (shouldExpand) {
-          itemsContainer.style.maxHeight = (grouped[cat].length * 42) + 'px';
+          const itemsContainer = document.createElement('div');
+          itemsContainer.className = 'category-items';
+          itemsContainer.style.maxHeight = '1000px';
           itemsContainer.style.padding = '0.2rem 0';
-        } else {
-          itemsContainer.style.maxHeight = '0px';
-          itemsContainer.style.padding = '0';
-        }
 
-        grouped[cat].forEach(video => {
-          const item = document.createElement('div');
-          item.className = 'title-item';
-          if (video.protected) item.classList.add('protected');
-          item.innerHTML = `<i class="fas ${video.protected ? 'fa-lock' : 'fa-play'}"></i> ${video.title}`;
-          item.addEventListener('click', () => selectVideo(video, item));
-          itemsContainer.appendChild(item);
+          grouped[cat].forEach(video => {
+            const item = document.createElement('div');
+            item.className = 'title-item';
+            if (video.protected) item.classList.add('protected');
+            item.innerHTML = `<i class="fas ${video.protected ? 'fa-lock' : 'fa-play'}"></i> ${video.title}`;
+            item.addEventListener('click', () => selectVideo(video, item));
+            itemsContainer.appendChild(item);
+          });
+
+          titleList.appendChild(itemsContainer);
+        });
+      } else {
+        const grouped = {};
+        videos.forEach(v => {
+          const cat = v.category || "Uncategorized";
+          if (!grouped[cat]) grouped[cat] = [];
+          grouped[cat].push(v);
         });
 
-        titleList.appendChild(itemsContainer);
+        titleList.innerHTML = '';
+        const categories = Object.keys(grouped).sort();
 
-        // Toggle on click
-        header.addEventListener('click', () => {
-          toggleCategory(header, itemsContainer, header.querySelector('.chevron'));
+        categories.forEach(cat => {
+          const isExpanded = allCategoriesState[cat];
+
+          const header = document.createElement('div');
+          header.className = 'category-header';
+          header.dataset.category = cat;
+          header.innerHTML = `<i class="fas fa-chevron-right chevron ${isExpanded ? 'rotated' : ''}"></i> ${cat}`;
+          titleList.appendChild(header);
+
+          const itemsContainer = document.createElement('div');
+          itemsContainer.className = 'category-items';
+          if (isExpanded) {
+            itemsContainer.style.display = 'block';
+            const height = itemsContainer.scrollHeight;
+            itemsContainer.style.display = '';
+            itemsContainer.style.maxHeight = height + 'px';
+            itemsContainer.style.padding = '0.2rem 0';
+          } else {
+            itemsContainer.style.maxHeight = '0px';
+            itemsContainer.style.padding = '0';
+          }
+
+          grouped[cat].forEach(video => {
+            const item = document.createElement('div');
+            item.className = 'title-item';
+            if (video.protected) item.classList.add('protected');
+            item.innerHTML = `<i class="fas ${video.protected ? 'fa-lock' : 'fa-play'}"></i> ${video.title}`;
+            item.addEventListener('click', () => selectVideo(video, item));
+            itemsContainer.appendChild(item);
+          });
+
+          titleList.appendChild(itemsContainer);
+
+          header.addEventListener('click', () => {
+            toggleCategory(header, itemsContainer, header.querySelector('.chevron'), cat);
+          });
         });
-      });
+      }
     }
 
     function performSearch() {
       const query = searchBox.value.trim().toLowerCase();
       if (!query) {
-        renderGroupedList(videos);
+        renderGroupedList(videos, false);
         clearSearchBtn.style.display = 'none';
         return;
       }
@@ -491,11 +554,10 @@
         (v.category && v.category.toLowerCase().includes(query))
       );
 
-      renderGroupedList(filtered, query); // force expand when searching
+      renderGroupedList(filtered, true);
       clearSearchBtn.style.display = 'block';
     }
 
-    // Events
     searchBox.addEventListener('input', performSearch);
     clearSearchBtn.addEventListener('click', () => {
       searchBox.value = '';
@@ -503,6 +565,19 @@
       renderGroupedList(videos);
       searchBox.focus();
     });
+
+    function validatePassword() {
+      if (videoPassword.value === VIDEO_PASSWORD) {
+        passwordModal.style.display = 'none';
+        if (pendingVideo) {
+          loadVideo(pendingVideo); // ✅ Works without DOM element
+          pendingVideo = null;
+        }
+      } else {
+        passwordError.style.display = 'block';
+        setTimeout(() => passwordError.style.display = 'none', 2000);
+      }
+    }
 
     submitPassword.addEventListener('click', validatePassword);
     videoPassword.addEventListener('keypress', (e) => {
@@ -513,19 +588,6 @@
       pendingVideo = null;
     });
 
-    function validatePassword() {
-      if (videoPassword.value === VIDEO_PASSWORD) {
-        passwordModal.style.display = 'none';
-        if (pendingVideo) {
-          loadVideo(pendingVideo);
-          pendingVideo = null;
-        }
-      } else {
-        passwordError.style.display = 'block';
-        setTimeout(() => passwordError.style.display = 'none', 2000);
-      }
-    }
-
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && passwordModal.style.display === 'flex') {
         passwordModal.style.display = 'none';
@@ -533,10 +595,6 @@
       }
     });
 
-    // Init: all categories expanded by default
-    Object.keys([...new Set(videos.map(v => v.category || "Uncategorized"))]).forEach(cat => {
-      allCategoriesState[cat] = true;
-    });
     renderGroupedList(videos);
     searchBox.focus();
   </script>
