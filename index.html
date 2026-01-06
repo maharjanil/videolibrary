@@ -47,6 +47,7 @@ body {
   background: #222;
   color: #fff;
   font-size: 0.95rem;
+  min-width: 140px;
 }
 .filters select:focus, .filters input:focus {
   outline: none;
@@ -256,6 +257,10 @@ body {
     grid-template-columns: 1fr;
     padding: 1rem;
   }
+  .filters select, .filters input {
+    min-width: auto;
+    width: 100%;
+  }
 }
 </style>
 </head>
@@ -270,6 +275,9 @@ body {
   </select>
   <select id="subcategoryFilter">
     <option value="">All Subcategories</option>
+  </select>
+  <select id="topicFilter">
+    <option value="">All Topics</option>
   </select>
   <input type="text" id="searchBox" placeholder="Search videos..." autocomplete="off" style="flex:1; max-width:300px;">
 </div>
@@ -295,7 +303,7 @@ body {
   <div class="modal-content">
     <h5 class="mb-3"><i class="fas fa-lock me-2"></i>Enter Password</h5>
     <input type="password" id="videoPassword" class="form-control" placeholder="Password" autocomplete="off">
-    <p id="passwordError">Incorrect password. please try again.</p>
+    <p id="passwordError">Incorrect password. Please try again.</p>
     <div class="d-flex justify-content-between mt-3">
       <button id="cancelPassword" class="btn btn-secondary btn-sm">Cancel</button>
       <button id="submitPassword" class="btn btn-primary btn-sm">Unlock Video</button>
@@ -333,12 +341,14 @@ const videos = [
   { title: "10. Solid Drawing & Staging", type: "youtube", url: "https://youtu.be/a0hNxh1kYd0?si=K5BO0xwulmzt0jDP", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
   { title: "11. Appeal", type: "youtube", url: "https://youtu.be/9KnqawkGaRw", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
   { title: "12. What Lies Ahead Live Lecture", type: "youtube", url: "https://youtu.be/FppYpvBUHNo?si=6gxYldafBpupbJEd", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
+  
   { title: "Part-1", type: "drive", id: "1fZmkg3M3sC_kpKEVS5WZUJIR5-rarVIQ", protected: false, category: "Anatomy of an Action"},
   { title: "Part-2", type: "drive", id: "1nl8Gxah2qg4jatq-kiNLh2pGPqF4m8Xe", protected: false, category: "Anatomy of an Action"},
   { title: "Part-3", type: "drive", id: "1BAvHJkYICXQFbMkg57RzKNZqTsvABVnF", protected: false, category: "Anatomy of an Action"},
   { title: "Part-4", type: "drive", id: "1RcqEnWO6EIKoothyT9cUo4cp3MjhM-iG", protected: false, category: "Anatomy of an Action"},
   { title: "Part-5", type: "drive", id: "13QJUWnhXwJx2Mrf962DKiurlUB0BLgyb", protected: false, category: "Anatomy of an Action"},
   { title: "Part-6", type: "drive", id: "1KEDm1mzY69nRhex_7DfhMrr-OJ27zwac", protected: false, category: "Anatomy of an Action"},
+  
   { title: "01. Landing Page Video", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
   { title: "02. Welcome to the course!", type: "drive", id: "127KX05ggKOqbnbSPbNDfE1O74pORa_ee", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
   { title: "03. Anticipation & Lifting Part - 1", type: "drive", id: "1JTiptjWu-QprXeTF-TDl0QDn0mILpb1K", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
@@ -350,8 +360,11 @@ const videos = [
   { title: "09. Anticipation & Lifting Part - 7", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
   { title: "10. Anticipation & Lifting Part - 8", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
   { title: "11. Anticipation & Lifting Part - 9", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
+  
   { title: "VTS 01: Poses Part I", type: "youtube", url: "https://youtu.be/CaZiyqF1__Y?si=bFWuv_eU-B7HOvWo",protected: false, category: "Keith Lango", subcategory: "VTS Animation Tutorials"},
+  
   { title: "01. Getting good timing during blocking", type: "youtube", url: "https://youtu.be/VJDoS2h1pZM?si=SlaQM62PK8JryZhn", protected: false, category: "Kenny Roy Animation"},
+  
   { title: "01. The Importance of Body Mechanics", type: "youtube", url: "https://youtu.be/-75GYRGp1H4", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
   { title: "02. Using Reference", type: "youtube", url: "https://youtu.be/sRf3HoXLpbs", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12"  },
   { title: "03. Walk cycle - Part 1", type: "youtube", url: "https://youtu.be/N8woJ96dpXM", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
@@ -364,6 +377,7 @@ const videos = [
   { title: "10. Heavy Lift or Push - Part 2", type: "youtube", url: "https://youtu.be/4zDOZ_XMAC8", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
   { title: "11. Heavy Lift or Push - Part 3", type: "youtube", url: "https://youtu.be/-eSDp-5PAOk", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
   { title: "12. Course Review", type: "youtube", url: "https://youtu.be/cb6_io8ZF3A", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
+  
   { title: "01-A Lamp & A Ball | Part - 1", type: "drive", id: "1E47FngraJieAL3SjqxZ0k1zPo_J-LcNW", protected: true, category: "Blue Shuttle", subcategory: "Week 1" },
   { title: "02-A Lamp & A Ball | Part - 2", type: "drive", id: "1m9xjrGfY38T8fB0LFVidLEhgaZ1tkPjX", protected: true, category: "Blue Shuttle", subcategory: "Week 1" },
   { title: "03-The Graph Editor", type: "drive", id: "1mUMXroAUQMYNTIf-g12I84bfBrNYLM0u", protected: true, category: "Blue Shuttle", subcategory: "Week 2" },
@@ -384,6 +398,7 @@ const videos = [
   { title: "18-Constraints - P1", type: "drive", id: "187NFHGql8eODcQuQjGuGJVlOQB2lfLJC", protected: true, category: "Blue Shuttle", subcategory: "Week 8" },
   { title: "19-Constraints - P2", type: "drive", id: "1RQerCtoJ46h062t0Nd_wM2V0EuBn9mhB", protected: true, category: "Blue Shuttle", subcategory: "Week 8" },
   { title: "20-Constraints - P3", type: "drive", id: "17dehY-J_MBLSpgiawvj1-RqpIC_nzTW3", protected: true, category: "Blue Shuttle", subcategory: "Week 8" },
+  
   { title: "Top 10 Animation Exercises", type: "youtube", url: "https://youtu.be/qFLsNoiZts0", protected: false, category: "Maya Animation", subcategory: "Animator's Journey" },
   { title: "Walk Cycle | Rusty Animator", type: "youtube", url: "https://www.youtube.com/watch?v=STjKkhROdWE", category: "Maya Animation", subcategory: "Rusty Animator" },
   { title: "Basic Ball with Tail Animation", type: "youtube", url: "https://youtu.be/RJfc7RIvIjk", category: "Maya Animation", subcategory: "Tips & Tricks" },
@@ -395,15 +410,19 @@ const videos = [
   { title: "Get rid of floaty movements and jerks from your animation | Koushik Chatterjee", type: "youtube", url: "https://youtu.be/WzKJOuzV7dE", category: "Maya Animation", subcategory: "Koushik Chatterjee" },
   { title: "Front Walk Cycle Animation In After Effects | Jafar Fazel", type: "youtube", url: "https://youtu.be/UaWq3cEzrKc", category: "After Effects", subcategory: "Jafar Fazel" },
   { title: "Front Run Cycle Animation In After Effects | Jafar Fazel", type: "youtube", url: "https://youtu.be/O0a_gu3lYXo", category: "After Effects", subcategory: "Jafar Fazel" },
+  
   { title: "Rotation", type: "drive", id: "1ISju-FvqfHc1mSVbkZKpbCP4hRr2NE-F", protected: false, category: "After Effects", subcategory: "Tips & Tricks" },
   { title: "Lip Sync with Slider Control: No Plugins", type: "youtube", url: "https://youtu.be/GChTfGiO22I", category: "After Effects", subcategory: "Tips & Tricks" },
+  
   { title: "Follow through and overlapping Action", type: "youtube", url: "https://youtu.be/W64m8yx_8PA", category: "Principles Of Animation" },
   { title: "The basics of Tail Motion | How to Animate a Tail", type: "youtube", url: "https://youtu.be/fcxRCX1DPKY", category: "Principles Of Animation" },
   { title: "Mastering in Tail Animation", type: "youtube", url: "https://youtu.be/p_SASojvGZk", category: "Principles Of Animation" },
+  
   { title: "Animation for Beginners - Intro", type: "youtube", url: "https://youtu.be/P1rqa44WTFY?si=jcWttMZe_bFeegur", protected: false, category: "Animation For Beginners", subcategory:"Animation Lessons" },
   { title: "Lesson 00: Course Introduction", type: "youtube", url: "https://youtu.be/pJzqjetM25o", protected: false, category: "Animation For Beginners" },
   { title: "Lesson 01: What is Animation?", type: "youtube", url: "https://youtu.be/LT5kccitFM4", protected: false, category: "Animation For Beginners" },
   { title: "Lesson 02: Timing, Spacing, Ease In & Ease Out", type: "youtube", url: "https://youtu.be/BN2xtAJkgf0", protected: false, category: "Animation For Beginners" },
+  
   { title: "Overlapping & Secondary Action | Alessandro Camporota", type: "youtube", url: "https://youtu.be/0fnOBuTG6kU", category: "Maya Animation", subcategory: " Alessandro Camporota", topic: "Basics" },
   { title: "How I became a 3D animator (Part 1) : All my mistakes!", type: "youtube", url: "https://youtu.be/QRoqQdfJZ9s", category: "Maya Animation", subcategory: " Alessandro Camporota", topic: "Story" },
   { title: "How I became a 3D animator (Part 2) : My Animation Mentor Experiences", type: "youtube", url: "https://youtu.be/le3F3unptsA?si=TGcjzSnaXPYOSoSK", category: "Maya Animation", subcategory: " Alessandro Camporota", topic: "Story" },
@@ -439,27 +458,41 @@ const videos = [
   { title: "Tut-09_Jump in perspective_Maya", type: "drive", id: "1hRM0zNOHtsaH9wXQdj3vCWbiRWMQfNOB", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
   { title: "Tut-10_Weight-push_Flipbook", type: "drive", id: "11CYT2fbSi5ru14LfKVCxovLJF1Uj9nQG", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
   { title: "Tut-10_Weight-push_Maya", type: "drive", id: "17fRMXQthnbB9f_fTF8gEwutkjgwulXC9", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
-  { title: "Tut-11_Gun on the ball_Flipbook", type: "drive", id: "1Lz-P4b2D_lLX5-hGAdhBGsTPqYWyJ9Ji", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
+  { title: "Tut-11_Guy on the ball_Flipbook", type: "drive", id: "1Lz-P4b2D_lLX5-hGAdhBGsTPqYWyJ9Ji", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
   { title: "Tut-11_Guy on the ball_Maya", type: "drive", id: "1zfvF0Kb8gw_E784R3OB8BFmrYX72SbKW", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
   { title: "Tut-12_Run to fast_Flipbook", type: "drive", id: "1rCxw09IT1xEJwMDeVXMjcTseo7ov97XL", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
   { title: "Tut-12_Run to fast_Maya", type: "drive", id: "1InpBQ4uQN4z_BQ45c0u_cfJ-HPD7FYWI", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
+  
   { title: "Overlap in Maya-01", type: "drive", id: "16Flb34WRzLWqx5SoIBr43NsaQkMzpMoW", protected: true, category: "iAnimate", subcategory: "Ramup_Basics"},
   { title: "Overlap in Maya-02", type: "drive", id: "1vNBhmmfAjos8BA2gLYd8B7Lh2ANutkBF", protected: true, category: "iAnimate", subcategory: "Ramup_Basics"},
   { title: "Timing & Spacing-01", type: "drive", id: "17rCO1foxA21Rgai5SjZfm6x4nBSHNb1s", protected: true, category: "iAnimate", subcategory: "Ramup_Basics"},
   { title: "Timing & Spacing-02", type: "drive", id: "1ExpZTdxM_caQ1v_ly6jn0HWv8OxvrcQa", protected: true, category: "iAnimate", subcategory: "Ramup_Basics"},
 
   { title: "assignment_week 1 & 2", type: "drive", id: "1u66LvbgViPFuWsLW5Q529__lwIt4qJgb", protected: true, category: "iAnimate", subcategory: "Workshop 1", topic:"Week-01"},
+  { title: "QnA Sequence 01", type: "drive", id: "1isX4Ta9CRW4YyU-3X_LSvHrLZz-DSqzb", protected: true, category: "iAnimate", subcategory: "Workshop 1", topic:"Week-01"},
+  { title: "Review 01", type: "drive", id: "1EqjqAqd5_I1kkXW3Dv8rwvhs2rv5EVPk", protected: true, category: "iAnimate", subcategory: "Workshop 1", topic:"Week-01"},
+  { title: "Week_01", type: "drive", id: "1RwYahF2iLyPVx3nDf44OqV_GhCyOKWNV", protected: true, category: "iAnimate", subcategory: "Workshop 1", topic:"Week-01"},
+  { title: "assignment_week 1 & 2", type: "drive", id: "1u66LvbgViPFuWsLW5Q529__lwIt4qJgb", protected: true, category: "iAnimate", subcategory: "Workshop 1", topic:"Week-01"},
+  { title: "assignment_week 1 & 2", type: "drive", id: "1u66LvbgViPFuWsLW5Q529__lwIt4qJgb", protected: true, category: "iAnimate", subcategory: "Workshop 1", topic:"Week-01"},
+  { title: "assignment_week 1 & 2", type: "drive", id: "1u66LvbgViPFuWsLW5Q529__lwIt4qJgb", protected: true, category: "iAnimate", subcategory: "Workshop 1", topic:"Week-01"},
+  { title: "assignment_week 1 & 2", type: "drive", id: "1u66LvbgViPFuWsLW5Q529__lwIt4qJgb", protected: true, category: "iAnimate", subcategory: "Workshop 1", topic:"Week-01"},
+  { title: "assignment_week 1 & 2", type: "drive", id: "1u66LvbgViPFuWsLW5Q529__lwIt4qJgb", protected: true, category: "iAnimate", subcategory: "Workshop 1", topic:"Week-01"},
+  { title: "assignment_week 1 & 2", type: "drive", id: "1u66LvbgViPFuWsLW5Q529__lwIt4qJgb", protected: true, category: "iAnimate", subcategory: "Workshop 1", topic:"Week-01"},
+  { title: "assignment_week 1 & 2", type: "drive", id: "1u66LvbgViPFuWsLW5Q529__lwIt4qJgb", protected: true, category: "iAnimate", subcategory: "Workshop 1", topic:"Week-01"},
+  { title: "assignment_week 1 & 2", type: "drive", id: "1u66LvbgViPFuWsLW5Q529__lwIt4qJgb", protected: true, category: "iAnimate", subcategory: "Workshop 1", topic:"Week-01"},
 
+  
   
   { title: "Blocking workflow & simplifying animations | Koushik Chatterjee", type: "youtube", url: "https://youtu.be/rWxeZbwEV70", category: "Maya Animation", subcategory: "Koushik Chatterjee" }
 ];
 
 const VIDEO_PASSWORD = "Animator";
-const VIDEOS_PER_PAGE = 20;
+const VIDEOS_PER_PAGE = 50;
 
 // DOM
 const categoryFilter = document.getElementById('categoryFilter');
 const subcategoryFilter = document.getElementById('subcategoryFilter');
+const topicFilter = document.getElementById('topicFilter');
 const searchBox = document.getElementById('searchBox');
 const videoGrid = document.getElementById('videoGrid');
 const paginationEl = document.getElementById('pagination');
@@ -478,14 +511,14 @@ const headerTitle = document.getElementById('headerTitle');
 let currentVideo = null;
 let currentPage = 1;
 
-// Helper: extract YouTube ID
+// Helper: YouTube ID
 function getYouTubeId(url) {
   const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
   const match = url.trim().match(regExp);
   return (match && match[2].length === 11) ? match[2] : null;
 }
 
-// Helper: get thumbnail
+// Helper: thumbnail
 function getThumbnailUrl(video) {
   if (video.type === "youtube") {
     const id = getYouTubeId(video.url);
@@ -496,7 +529,7 @@ function getThumbnailUrl(video) {
   return null;
 }
 
-// Helper: get embed URL
+// Helper: embed URL
 function getEmbedUrl(video) {
   if (video.type === "youtube") {
     const id = getYouTubeId(video.url);
@@ -509,9 +542,9 @@ function getEmbedUrl(video) {
 
 // Populate filters
 function populateFilters() {
-  const categories = [...new Set(videos.map(v => v.category || "Uncategorized"))].sort();
+  const cats = [...new Set(videos.map(v => v.category || "Uncategorized"))].sort();
   categoryFilter.innerHTML = '<option value="">All Categories</option>';
-  categories.forEach(cat => {
+  cats.forEach(cat => {
     const opt = document.createElement('option');
     opt.value = cat;
     opt.textContent = cat;
@@ -521,20 +554,34 @@ function populateFilters() {
 }
 
 function updateSubcategories() {
-  const selectedCat = categoryFilter.value;
+  const cat = categoryFilter.value;
   subcategoryFilter.innerHTML = '<option value="">All Subcategories</option>';
-  if (!selectedCat) return;
-  const subcats = [...new Set(
-    videos
-      .filter(v => (v.category || "Uncategorized") === selectedCat)
-      .map(v => v.subcategory)
-      .filter(sub => sub)
+  topicFilter.innerHTML = '<option value="">All Topics</option>';
+  if (!cat) return;
+  const subs = [...new Set(
+    videos.filter(v => (v.category || "Uncategorized") === cat).map(v => v.subcategory).filter(Boolean)
   )].sort();
-  subcats.forEach(sub => {
+  subs.forEach(sub => {
     const opt = document.createElement('option');
     opt.value = sub;
     opt.textContent = sub;
     subcategoryFilter.appendChild(opt);
+  });
+}
+
+function updateTopics() {
+  const cat = categoryFilter.value;
+  const sub = subcategoryFilter.value;
+  topicFilter.innerHTML = '<option value="">All Topics</option>';
+  if (!cat || !sub) return;
+  const topics = [...new Set(
+    videos.filter(v => (v.category || "Uncategorized") === cat && v.subcategory === sub).map(v => v.topic).filter(Boolean)
+  )].sort();
+  topics.forEach(top => {
+    const opt = document.createElement('option');
+    opt.value = top;
+    opt.textContent = top;
+    topicFilter.appendChild(opt);
   });
 }
 
@@ -573,15 +620,17 @@ function createVideoCard(video) {
   return card;
 }
 
-// Filter and paginate
+// Filter & paginate
 function getFilteredVideos() {
   let list = [...videos];
   const cat = categoryFilter.value;
   const sub = subcategoryFilter.value;
+  const top = topicFilter.value;
   const query = searchBox.value.trim().toLowerCase();
 
   if (cat) list = list.filter(v => (v.category || "Uncategorized") === cat);
   if (sub) list = list.filter(v => v.subcategory === sub);
+  if (top) list = list.filter(v => v.topic === top);
   if (query) {
     list = list.filter(v =>
       v.title.toLowerCase().includes(query) ||
@@ -668,7 +717,7 @@ function playVideoInPopup(video) {
   popupModal.style.display = 'flex';
 }
 
-// Password validation
+// Password
 function validatePassword() {
   if (videoPassword.value === VIDEO_PASSWORD) {
     passwordModal.style.display = 'none';
@@ -682,26 +731,34 @@ function validatePassword() {
   }
 }
 
-// Reset UI
+// Reset
 function resetAll() {
   categoryFilter.value = '';
   subcategoryFilter.value = '';
+  topicFilter.value = '';
   searchBox.value = '';
   currentPage = 1;
   updateSubcategories();
+  updateTopics();
   renderVideos();
   popupModal.style.display = 'none';
   popupFrame.src = '';
   passwordModal.style.display = 'none';
 }
 
-// Event Listeners
+// Events
 categoryFilter.addEventListener('change', () => {
   currentPage = 1;
   updateSubcategories();
+  updateTopics();
   renderVideos();
 });
 subcategoryFilter.addEventListener('change', () => {
+  currentPage = 1;
+  updateTopics();
+  renderVideos();
+});
+topicFilter.addEventListener('change', () => {
   currentPage = 1;
   renderVideos();
 });
