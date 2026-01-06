@@ -1,971 +1,988 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Learning Center</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: #0f0f0f;
-      color: #f0f0f0;
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Learning Center</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #0f0f0f;
+  color: #f0f0f0;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.header {
+  background: #1a1a1a;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  padding: 1rem 2rem;
+  text-align: center;
+  border-bottom: 1px solid #333;
+  position: relative;
+}
+#sidebarToggle {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #333;
+  border: none;
+  color: #ccc;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+#sidebarToggle:hover {
+  background: #444;
+  color: #fff;
+}
+.header h1 {
+  font-weight: 600;
+  color: #e0e0e0;
+  margin: 0;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+.popup-toggle-container {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+  font-size: 0.85rem;
+}
+.popup-toggle-container label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.main-layout {
+  display: flex;
+  flex: 1;
+  padding: 1.5rem;
+  gap: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  transition: padding 0.3s ease;
+}
+.main-layout.centered {
+  justify-content: center;
+  padding: 1.5rem 0;
+}
+.main-layout.centered .video-panel {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 1.5rem;
+}
+.title-sidebar {
+  width: 320px;
+  background: #1a1a1a;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 2rem);
+  overflow: hidden;
+  transition: transform 0.35s ease, opacity 0.35s ease;
+}
+.title-sidebar.hidden {
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+.video-panel {
+  flex: 1;
+  background: #1a1a1a;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #333;
+}
+.search-box-container {
+  padding: 1.2rem 1rem 0.8rem;
+  position: relative;
+  flex-shrink: 0;
+}
+#searchBox {
+  width: 100%;
+  padding: 0.75rem 36px 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #252525;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+}
+#searchBox:focus {
+  border-color: #4a90e2;
+}
+.search-icon {
+  position: absolute;
+  right: 2.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+}
+.clear-search {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: none;
+}
+.clear-search:hover {
+  color: #fff;
+}
+.title-list {
+  padding: 0.5rem 0;
+  overflow-y: auto;
+  flex: 1;
+  max-height: calc(100vh - 180px);
+  scrollbar-width: thin;
+  scrollbar-color: #000 #222;
+}
+.title-list::-webkit-scrollbar {
+  width: 8px;
+}
+.title-list::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+.title-list::-webkit-scrollbar-thumb {
+  background: #000;
+  border-radius: 4px;
+}
+.title-list::-webkit-scrollbar-thumb:hover {
+  background: #333;
+}
+.category-header {
+  padding: 0.7rem 1.2rem;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  background: #222;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  transition: background 0.2s;
+  border-top: 1px solid #333;
+}
+.category-header:first-child {
+  border-top: none;
+}
+.category-header:hover {
+  background: #2a2a2a;
+}
+.category-header i.chevron {
+  margin-right: 0.6rem;
+  font-size: 0.8rem;
+  transition: transform 0.25s ease;
+}
+.category-header i.chevron.rotated {
+  transform: rotate(90deg);
+}
+.category-items {
+  overflow: hidden;
+  transition: max-height 0.35s ease, padding 0.35s ease, opacity 0.35s ease;
+  padding: 0;
+  max-height: 0;
+  opacity: 0;
+}
+.category-items.expanded {
+  padding: 0.2rem 0;
+  max-height: 1000px;
+  opacity: 1;
+}
+.title-item {
+  padding: 0.85rem 1.2rem 0.85rem 2.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+}
+.title-item:hover {
+  background: #2a2a2a;
+}
+.title-item.active {
+  background: #2d3748;
+  font-weight: 600;
+  color: #ffffff;
+}
+.title-item i {
+  margin-right: 10px;
+  font-size: 0.9rem;
+  color: #888;
+  width: 16px;
+  text-align: center;
+}
+.title-item.protected i {
+  color: #d97706;
+}
+.video-header {
+  padding: 1rem 1.5rem;
+  background: #252525;
+  border-bottom: 1px solid #333;
+}
+.video-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #e0e0e0;
+}
+.video-header .source {
+  font-size: 0.85rem;
+  color: #aaa;
+  margin-top: 0.25rem;
+}
+.video-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background: #0f0f0f;
+  position: relative;
+}
+.video-placeholder {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  max-width: 80%;
+}
+.video-container.video-active .video-placeholder {
+  display: none;
+}
+.video-container iframe {
+  width: 100%;
+  height: 100%;
+  max-width: 900px;
+  max-height: 540px;
+  border-radius: 8px;
+  border: none;
+  display: none;
+}
+.video-container.video-active iframe {
+  display: block;
+}
 
-    .header {
-      background: #1a1a1a;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-      padding: 1rem 2rem;
-      text-align: center;
-      border-bottom: 1px solid #333;
-      position: relative;
-    }
+/* === POPUP MODAL === */
+#videoPopupModal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.9);
+  z-index: 3000;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+#videoPopupModal #popupTitle {
+  color: white;
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+#videoPopupModal:hover #popupTitle {
+  opacity: 1;
+}
+#closePopup {
+  position: absolute;
+  top: -40px; right: 0;
+  background: #fff; color: #000;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-weight: bold;
+  cursor: pointer;
+  display: none;
+  z-index: 3001;
+}
+#videoPopupModal:hover #closePopup {
+  display: block;
+}
+#popupVideoFrame {
+  width: 90%;
+  max-width: 900px;
+  height: 540px;
+  border: none;
+  border-radius: 8px;
+}
 
-    #sidebarToggle {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      background: #333;
-      border: none;
-      color: #ccc;
-      width: 36px;
-      height: 36px;
-      border-radius: 6px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.2s;
-    }
+/* Password Modal */
+#passwordModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+}
+#passwordModal .modal-content {
+  background: #1a1a1a;
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+  border: 1px solid #444;
+  color: #f0f0f0;
+}
+#passwordError {
+  display: none;
+  color: #f87171;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
 
-    #sidebarToggle:hover {
-      background: #444;
-      color: #fff;
-    }
-
-    .header h1 {
-      font-weight: 600;
-      color: #e0e0e0;
-      margin: 0;
-      font-size: 1.6rem;
-      cursor: pointer;
-    }
-
-    .main-layout {
-      display: flex;
-      flex: 1;
-      padding: 1.5rem;
-      gap: 1.5rem;
-      max-width: 1400px;
-      margin: 0 auto;
-      width: 100%;
-      transition: padding 0.3s ease;
-    }
-
-    .main-layout.centered {
-      justify-content: center;
-      padding: 1.5rem 0;
-    }
-
-    .main-layout.centered .video-panel {
-      width: 100%;
-      max-width: 1000px;
-      margin: 0 1.5rem;
-    }
-
-    .title-sidebar {
-      width: 320px;
-      background: #1a1a1a;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-      display: flex;
-      flex-direction: column;
-      max-height: calc(100vh - 2rem);
-      overflow: hidden;
-      transition: transform 0.35s ease, opacity 0.35s ease;
-    }
-
-    .title-sidebar.hidden {
-      transform: translateX(-100%);
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .video-panel {
-      flex: 1;
-      background: #1a1a1a;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      border: 1px solid #333;
-    }
-
-    .search-box-container {
-      padding: 1.2rem 1rem 0.8rem;
-      position: relative;
-      flex-shrink: 0;
-    }
-
-    #searchBox {
-      width: 100%;
-      padding: 0.75rem 36px 0.75rem 1rem;
-      border-radius: 8px;
-      border: 1px solid #444;
-      background: #252525;
-      color: #fff;
-      font-size: 1rem;
-      outline: none;
-    }
-
-    #searchBox:focus {
-      border-color: #4a90e2;
-    }
-
-    .search-icon {
-      position: absolute;
-      right: 2.2rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #888;
-    }
-
-    .clear-search {
-      position: absolute;
-      right: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: #aaa;
-      cursor: pointer;
-      font-size: 1.1rem;
-      display: none;
-    }
-
-    .clear-search:hover {
-      color: #fff;
-    }
-
-    .title-list {
-      padding: 0.5rem 0;
-      overflow-y: auto;
-      flex: 1;
-      max-height: calc(100vh - 180px);
-      scrollbar-width: thin;
-      scrollbar-color: #000 #222;
-    }
-
-    .title-list::-webkit-scrollbar {
-      width: 8px;
-    }
-    .title-list::-webkit-scrollbar-track {
-      background: #1a1a1a;
-    }
-    .title-list::-webkit-scrollbar-thumb {
-      background: #000;
-      border-radius: 4px;
-    }
-    .title-list::-webkit-scrollbar-thumb:hover {
-      background: #333;
-    }
-
-    .category-header {
-      padding: 0.7rem 1.2rem;
-      color: #e0e0e0;
-      font-size: 0.95rem;
-      font-weight: 600;
-      background: #222;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      user-select: none;
-      transition: background 0.2s;
-      border-top: 1px solid #333;
-    }
-
-    .category-header:first-child {
-      border-top: none;
-    }
-
-    .category-header:hover {
-      background: #2a2a2a;
-    }
-
-    .category-header i.chevron {
-      margin-right: 0.6rem;
-      font-size: 0.8rem;
-      transition: transform 0.25s ease;
-    }
-
-    .category-header i.chevron.rotated {
-      transform: rotate(90deg);
-    }
-
-    .category-items {
-      overflow: hidden;
-      transition: max-height 0.35s ease, padding 0.35s ease, opacity 0.35s ease;
-      padding: 0;
-      max-height: 0;
-      opacity: 0;
-    }
-
-    .category-items.expanded {
-      padding: 0.2rem 0;
-      max-height: 1000px;
-      opacity: 1;
-    }
-
-    .title-item {
-      padding: 0.85rem 1.2rem 0.85rem 2.8rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-    }
-
-    .title-item:hover {
-      background: #2a2a2a;
-    }
-
-    .title-item.active {
-      background: #2d3748;
-      font-weight: 600;
-      color: #ffffff;
-    }
-
-    .title-item i {
-      margin-right: 10px;
-      font-size: 0.9rem;
-      color: #888;
-      width: 16px;
-      text-align: center;
-    }
-
-    .title-item.protected i {
-      color: #d97706;
-    }
-
-    .video-header {
-      padding: 1rem 1.5rem;
-      background: #252525;
-      border-bottom: 1px solid #333;
-    }
-
-    .video-header h2 {
-      margin: 0;
-      font-size: 1.3rem;
-      color: #e0e0e0;
-    }
-
-    .video-header .source {
-      font-size: 0.85rem;
-      color: #aaa;
-      margin-top: 0.25rem;
-    }
-
-    .video-container {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 1rem;
-      background: #0f0f0f;
-      position: relative;
-    }
-
-    .video-placeholder {
-      color: #666;
-      font-style: italic;
-      text-align: center;
-      max-width: 80%;
-    }
-
-    .video-container.video-active .video-placeholder {
-      display: none;
-    }
-
-    .video-container iframe {
-      width: 100%;
-      height: 100%;
-      max-width: 900px;
-      max-height: 540px;
-      border-radius: 8px;
-      border: none;
-      display: none;
-    }
-
-    .video-container.video-active iframe {
-      display: block;
-    }
-
-    #passwordModal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 2000;
-      justify-content: center;
-      align-items: center;
-    }
-    #passwordModal .modal-content {
-      background: #1a1a1a;
-      padding: 1.5rem;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-      border: 1px solid #444;
-      color: #f0f0f0;
-    }
-    #passwordError {
-      display: none;
-      color: #f87171;
-      font-size: 0.85rem;
-      margin-top: 0.5rem;
-    }
-
-    @media (max-width: 992px) {
-      .main-layout {
-        padding: 1rem;
-      }
-      #sidebarToggle {
-        left: 0.8rem;
-      }
-      .title-sidebar {
-        width: 260px;
-      }
-      .title-list {
-        max-height: calc(100vh - 160px);
-      }
-    }
-  </style>
+/* Responsive */
+@media (max-width: 992px) {
+  .main-layout {
+    padding: 1rem;
+  }
+  #sidebarToggle {
+    left: 0.8rem;
+  }
+  .title-sidebar {
+    width: 260px;
+  }
+  .title-list {
+    max-height: calc(100vh - 160px);
+  }
+  .popup-toggle-container {
+    right: 0.8rem;
+  }
+}
+</style>
 </head>
 <body>
-
-  <div class="header">
-    <button id="sidebarToggle" title="Toggle sidebar (Ctrl+E)">
-      <i class="fas fa-bars"></i>
-    </button>
-    <h1 id="headerTitle"><i class="fas fa-graduation-cap me-2"></i>Learning Center</h1>
+<div class="header">
+  <button id="sidebarToggle" title="Toggle sidebar (Ctrl+E)">
+    <i class="fas fa-bars"></i>
+  </button>
+  <h1 id="headerTitle"><i class="fas fa-graduation-cap me-2"></i>Learning Center</h1>
+  <div class="popup-toggle-container">
+    <label>
+      <input type="checkbox" id="popupToggle" />
+      Popup Mode
+    </label>
   </div>
+</div>
 
-  <div class="main-layout" id="mainLayout">
-    <div class="title-sidebar" id="sidebar">
-      <div class="search-box-container">
-        <input
-          type="text"
-          id="searchBox"
-          placeholder="Search lessons, categories, or topics..."
-          autocomplete="off"
-        />
-        <i class="fas fa-search search-icon"></i>
-        <button id="clearSearch" class="clear-search">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <div class="title-list" id="titleList"></div>
+<div class="main-layout" id="mainLayout">
+  <div class="title-sidebar" id="sidebar">
+    <div class="search-box-container">
+      <input
+        type="text"
+        id="searchBox"
+        placeholder="Search lessons, categories, or topics..."
+        autocomplete="off"
+      />
+      <i class="fas fa-search search-icon"></i>
+      <button id="clearSearch" class="clear-search">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
-
-    <div class="video-panel">
-      <div class="video-header">
-        <h2 id="currentTitle">Lesson Details</h2>
-        <div class="source" id="currentSource"></div>
-      </div>
-      <div class="video-container" id="videoContainer">
-        <div class="video-placeholder">
-          Select a lesson to begin
-        </div>
-        <iframe id="videoFrame" allowfullscreen loading="lazy"></iframe>
-      </div>
-    </div>
+    <div class="title-list" id="titleList"></div>
   </div>
-
-  <div id="passwordModal">
-    <div class="modal-content">
-      <h5 class="mb-3"><i class="fas fa-lock me-2"></i>Enter Password</h5>
-      <input type="password" id="videoPassword" class="form-control" placeholder="Password" autocomplete="off">
-      <p id="passwordError">Incorrect password. Please try again.</p>
-      <div class="d-flex justify-content-between mt-3">
-        <button id="cancelPassword" class="btn btn-secondary btn-sm">Cancel</button>
-        <button id="submitPassword" class="btn btn-primary btn-sm">Unlock Video</button>
+  <div class="video-panel">
+    <div class="video-header">
+      <h2 id="currentTitle">Lesson Details</h2>
+      <div class="source" id="currentSource"></div>
+    </div>
+    <div class="video-container" id="videoContainer">
+      <div class="video-placeholder">
+        Select a lesson to begin
       </div>
+      <iframe id="videoFrame" allowfullscreen loading="lazy"></iframe>
     </div>
   </div>
+</div>
 
-  <script>
-    const videos = [
-      { title: "AN01 01 - P01 Intro to Animation", type: "drive", id: "1iuZr4xkWiJdkfBLiqxU2S05o5sZ7gQNw", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 1" },
-      { title: "AN01 01 - P02 Animation as a Career", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 1"},
-      { title: "AN01 01 - P03 Feedback and Inspiration", type: "drive", id: "1iZ2QIfk4xknldxvxZ3BLH9Il7WuPdw4D", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 1"},
-      { title: "AN01 01 - P04 An Animator's Tool", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 1" },
-      { title: "AN01 01 - P05 Animation Planning", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 1"},
-      { title: "AN01 01 - P06 Animation is an Art not a Tool", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 1"},
-      
-      { title: "AN01 02 - P01 Intro to Principles Of Animation", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 2" },
-      { title: "AN01 02 - P02 12 Principles of Animation 1-6", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 2"},
-      { title: "AN01 02 - P03 12 Principles of Animation 7-12", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 2" },
-      { title: "AN01 02 - P04 Bonus Material - Interviews", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 2" },
-      
-      { title: "AN01 03 - P01 7 Planning Methods 1-3", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 3"},
-      { title: "AN01 03 - P02 7 Planning Methods 4-7", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 3"},
-      { title: "AN01 03 - P03 Blocking Methods - Layering and Pose to Pose", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 3"},
-      { title: "AN01 03 - P04 Blocking Methods - Straight Ahead", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 3"},
-      
-      { title: "Intro to Overlapping Action", type: "drive", id: "1NyFqEII1wTu0TeHBBD9d8SZOcfTMQKmc", protected: true, category: "Animation Mentor" },
-      
-      { title: "Review Week 08", type: "drive", id: "19RsGnCcfUeCbJx5aW0pXu8A5kITkGAKV", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Review Videos" },
-      
-      { title: "01. Intro to Animation in Maya", type: "youtube", url: "https://youtu.be/pMFjou6o0F4", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
-      { title: "02. Timing & Spacing", type: "youtube", url: "https://youtu.be/fimpR6dXF9o?si=Z9S9azo2-bUbU-lN", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
-      { title: "03. Squash & Stretch", type: "youtube", url: "https://youtu.be/yXmeq_w4WS4?si=gWxBTQdWpGD13ICS", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
-      { title: "04. Anticipation", type: "youtube", url: "https://youtu.be/oHperOZLHAM?si=pwoWEaJdVR-DwM78", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
-      { title: "05. Arcs", type: "youtube", url: "https://youtu.be/OtIvfVe_5YE?si=xlUTrWm5h81wkSnj", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
-      { title: "06. Overlap & Follow Through", type: "youtube", url: "https://youtu.be/bfBqrLByej0?si=B2xCLHDTo0NbGzQL", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
-      { title: "07. Secondary Action", type: "youtube", url: "https://youtu.be/4qx6WbbAFN0?si=n4OIJ50K06WQNL1G", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
-      { title: "08. Straight Ahead & Pose to Pose", type: "youtube", url: "https://youtu.be/BpmunUOY8kg?si=ngH6cSA9GxXmrsRm", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
-      { title: "09. Exaggeration In Animation", type: "youtube", url: "https://youtu.be/305PsHOZ9Kg", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
-      { title: "10. Solid Drawing & Staging", type: "youtube", url: "https://youtu.be/a0hNxh1kYd0?si=K5BO0xwulmzt0jDP", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
-      { title: "11. Appeal", type: "youtube", url: "https://youtu.be/9KnqawkGaRw", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
-      { title: "12. What Lies Ahead Live Lecture", type: "youtube", url: "https://youtu.be/FppYpvBUHNo?si=6gxYldafBpupbJEd", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
+<!-- Popup Video Modal -->
+<div id="videoPopupModal">
+  <button id="closePopup">×</button>
+  <div id="popupTitle"></div>
+  <iframe id="popupVideoFrame" allowfullscreen></iframe>
+</div>
 
-      { title: "Part-1", type: "drive", id: "1fZmkg3M3sC_kpKEVS5WZUJIR5-rarVIQ", protected: false, category: "Anatomy of an Action"},
-      { title: "Part-2", type: "drive", id: "1nl8Gxah2qg4jatq-kiNLh2pGPqF4m8Xe", protected: false, category: "Anatomy of an Action"},
-      { title: "Part-3", type: "drive", id: "1BAvHJkYICXQFbMkg57RzKNZqTsvABVnF", protected: false, category: "Anatomy of an Action"},
-      { title: "Part-4", type: "drive", id: "1RcqEnWO6EIKoothyT9cUo4cp3MjhM-iG", protected: false, category: "Anatomy of an Action"},
-      { title: "Part-5", type: "drive", id: "13QJUWnhXwJx2Mrf962DKiurlUB0BLgyb", protected: false, category: "Anatomy of an Action"},
-      { title: "Part-6", type: "drive", id: "1KEDm1mzY69nRhex_7DfhMrr-OJ27zwac", protected: false, category: "Anatomy of an Action"},
+<!-- Password Modal -->
+<div id="passwordModal">
+  <div class="modal-content">
+    <h5 class="mb-3"><i class="fas fa-lock me-2"></i>Enter Password</h5>
+    <input type="password" id="videoPassword" class="form-control" placeholder="Password" autocomplete="off">
+    <p id="passwordError">Incorrect password. Please try again.</p>
+    <div class="d-flex justify-content-between mt-3">
+      <button id="cancelPassword" class="btn btn-secondary btn-sm">Cancel</button>
+      <button id="submitPassword" class="btn btn-primary btn-sm">Unlock Video</button>
+    </div>
+  </div>
+</div>
 
-      { title: "01. Landing Page Video", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
-      { title: "02. Welcome to the course!", type: "drive", id: "127KX05ggKOqbnbSPbNDfE1O74pORa_ee", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
-      { title: "03. Anticipation & Lifting Part - 1", type: "drive", id: "1JTiptjWu-QprXeTF-TDl0QDn0mILpb1K", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
-      { title: "04. Anticipation & Lifting Part - 2", type: "drive", id: "1BvFWBiATtK4KqWLVqqQk1ZYNyzAVcLKc", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
-      { title: "05. Anticipation & Lifting Part - 3", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
-      { title: "06. Anticipation & Lifting Part - 4", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
-      { title: "07. Anticipation & Lifting Part - 5", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
-      { title: "08. Anticipation & Lifting Part - 6", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
-      { title: "09. Anticipation & Lifting Part - 7", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
-      { title: "10. Anticipation & Lifting Part - 8", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
-      { title: "11. Anticipation & Lifting Part - 9", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
+<script>
+const videos = [
+  { title: "AN01 01 - P01 Intro to Animation", type: "drive", id: "1iuZr4xkWiJdkfBLiqxU2S05o5sZ7gQNw", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 1" },
+  { title: "AN01 01 - P02 Animation as a Career", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 1"},
+  { title: "AN01 01 - P03 Feedback and Inspiration", type: "drive", id: "1iZ2QIfk4xknldxvxZ3BLH9Il7WuPdw4D", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 1"},
+  { title: "AN01 01 - P04 An Animator's Tool", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 1" },
+  { title: "AN01 01 - P05 Animation Planning", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 1"},
+  { title: "AN01 01 - P06 Animation is an Art not a Tool", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 1"},
+  { title: "AN01 02 - P01 Intro to Principles Of Animation", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 2" },
+  { title: "AN01 02 - P02 12 Principles of Animation 1-6", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 2"},
+  { title: "AN01 02 - P03 12 Principles of Animation 7-12", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 2" },
+  { title: "AN01 02 - P04 Bonus Material - Interviews", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 2" },
+  { title: "AN01 03 - P01 7 Planning Methods 1-3", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 3"},
+  { title: "AN01 03 - P02 7 Planning Methods 4-7", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 3"},
+  { title: "AN01 03 - P03 Blocking Methods - Layering and Pose to Pose", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 3"},
+  { title: "AN01 03 - P04 Blocking Methods - Straight Ahead", type: "drive", id: "1hsz4HCLLmkxOppXrRG_V6UHjoDpLIDZY", protected: true, category: "Animation Mentor (C1)", subcategory: "Course 1", topic: "Week 3"},
+  { title: "Intro to Overlapping Action", type: "drive", id: "1NyFqEII1wTu0TeHBBD9d8SZOcfTMQKmc", protected: true, category: "Animation Mentor" },
+  { title: "Review Week 08", type: "drive", id: "19RsGnCcfUeCbJx5aW0pXu8A5kITkGAKV", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Review Videos" },
+  { title: "01. Intro to Animation in Maya", type: "youtube", url: "https://youtu.be/pMFjou6o0F4", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
+  { title: "02. Timing & Spacing", type: "youtube", url: "https://youtu.be/fimpR6dXF9o?si=Z9S9azo2-bUbU-lN", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
+  { title: "03. Squash & Stretch", type: "youtube", url: "https://youtu.be/yXmeq_w4WS4?si=gWxBTQdWpGD13ICS", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
+  { title: "04. Anticipation", type: "youtube", url: "https://youtu.be/oHperOZLHAM?si=pwoWEaJdVR-DwM78", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
+  { title: "05. Arcs", type: "youtube", url: "https://youtu.be/OtIvfVe_5YE?si=xlUTrWm5h81wkSnj", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
+  { title: "06. Overlap & Follow Through", type: "youtube", url: "https://youtu.be/bfBqrLByej0?si=B2xCLHDTo0NbGzQL", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
+  { title: "07. Secondary Action", type: "youtube", url: "https://youtu.be/4qx6WbbAFN0?si=n4OIJ50K06WQNL1G", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
+  { title: "08. Straight Ahead & Pose to Pose", type: "youtube", url: "https://youtu.be/BpmunUOY8kg?si=ngH6cSA9GxXmrsRm", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
+  { title: "09. Exaggeration In Animation", type: "youtube", url: "https://youtu.be/305PsHOZ9Kg", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
+  { title: "10. Solid Drawing & Staging", type: "youtube", url: "https://youtu.be/a0hNxh1kYd0?si=K5BO0xwulmzt0jDP", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
+  { title: "11. Appeal", type: "youtube", url: "https://youtu.be/9KnqawkGaRw", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
+  { title: "12. What Lies Ahead Live Lecture", type: "youtube", url: "https://youtu.be/FppYpvBUHNo?si=6gxYldafBpupbJEd", protected: true, category: "CG Tarian", subcategory: "Animation Bootcamp", topic: "Lecture Video"},
+  { title: "Part-1", type: "drive", id: "1fZmkg3M3sC_kpKEVS5WZUJIR5-rarVIQ", protected: false, category: "Anatomy of an Action"},
+  { title: "Part-2", type: "drive", id: "1nl8Gxah2qg4jatq-kiNLh2pGPqF4m8Xe", protected: false, category: "Anatomy of an Action"},
+  { title: "Part-3", type: "drive", id: "1BAvHJkYICXQFbMkg57RzKNZqTsvABVnF", protected: false, category: "Anatomy of an Action"},
+  { title: "Part-4", type: "drive", id: "1RcqEnWO6EIKoothyT9cUo4cp3MjhM-iG", protected: false, category: "Anatomy of an Action"},
+  { title: "Part-5", type: "drive", id: "13QJUWnhXwJx2Mrf962DKiurlUB0BLgyb", protected: false, category: "Anatomy of an Action"},
+  { title: "Part-6", type: "drive", id: "1KEDm1mzY69nRhex_7DfhMrr-OJ27zwac", protected: false, category: "Anatomy of an Action"},
+  { title: "01. Landing Page Video", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
+  { title: "02. Welcome to the course!", type: "drive", id: "127KX05ggKOqbnbSPbNDfE1O74pORa_ee", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
+  { title: "03. Anticipation & Lifting Part - 1", type: "drive", id: "1JTiptjWu-QprXeTF-TDl0QDn0mILpb1K", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
+  { title: "04. Anticipation & Lifting Part - 2", type: "drive", id: "1BvFWBiATtK4KqWLVqqQk1ZYNyzAVcLKc", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
+  { title: "05. Anticipation & Lifting Part - 3", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
+  { title: "06. Anticipation & Lifting Part - 4", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
+  { title: "07. Anticipation & Lifting Part - 5", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
+  { title: "08. Anticipation & Lifting Part - 6", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
+  { title: "09. Anticipation & Lifting Part - 7", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
+  { title: "10. Anticipation & Lifting Part - 8", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
+  { title: "11. Anticipation & Lifting Part - 9", type: "drive", id: "1wkNxhN4oaS5-9zKfmb81yB7PNE45QWYC", protected: false, category: "Intermediate Animation In Maya", subcategory: "Section 1"},
+  { title: "VTS 01: Poses Part I", type: "youtube", url: "https://youtu.be/CaZiyqF1__Y?si=bFWuv_eU-B7HOvWo",protected: false, category: "Keith Lango", subcategory: "VTS Animation Tutorials"},
+  { title: "01. Getting good timing during blocking", type: "youtube", url: "https://youtu.be/VJDoS2h1pZM?si=SlaQM62PK8JryZhn", protected: false, category: "Kenny Roy Animation"},
+  { title: "01. The Importance of Body Mechanics", type: "youtube", url: "https://youtu.be/-75GYRGp1H4", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
+  { title: "02. Using Reference", type: "youtube", url: "https://youtu.be/sRf3HoXLpbs", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12"  },
+  { title: "03. Walk cycle - Part 1", type: "youtube", url: "https://youtu.be/N8woJ96dpXM", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
+  { title: "04. Walk cycle - Part 2", type: "youtube", url: "https://youtu.be/_Bujg-tP17M", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
+  { title: "05. Side Step - Part 1", type: "youtube", url: "https://youtu.be/VQqNmjBaykE", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
+  { title: "06. Side Step - Part 2", type: "youtube", url: "https://youtu.be/ufbD3cQVXoc", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
+  { title: "07. Sitting Down - Part 1", type: "youtube", url: "https://youtu.be/H5hHIvczLNs", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
+  { title: "08. Sitting Down - Part 2", type: "youtube", url: "https://youtu.be/Ex8ampUS4mw", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
+  { title: "09. Heavy Lift or Push - Part 1", type: "youtube", url: "https://youtu.be/XENUuoA0O0c", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
+  { title: "10. Heavy Lift or Push - Part 2", type: "youtube", url: "https://youtu.be/4zDOZ_XMAC8", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
+  { title: "11. Heavy Lift or Push - Part 3", type: "youtube", url: "https://youtu.be/-eSDp-5PAOk", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
+  { title: "12. Course Review", type: "youtube", url: "https://youtu.be/cb6_io8ZF3A", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
+  { title: "01-A Lamp & A Ball | Part - 1", type: "drive", id: "1E47FngraJieAL3SjqxZ0k1zPo_J-LcNW", protected: true, category: "Blue Shuttle", subcategory: "Week 1" },
+  { title: "02-A Lamp & A Ball | Part - 2", type: "drive", id: "1m9xjrGfY38T8fB0LFVidLEhgaZ1tkPjX", protected: true, category: "Blue Shuttle", subcategory: "Week 1" },
+  { title: "03-The Graph Editor", type: "drive", id: "1mUMXroAUQMYNTIf-g12I84bfBrNYLM0u", protected: true, category: "Blue Shuttle", subcategory: "Week 2" },
+  { title: "04-The Bouncing Ball", type: "drive", id: "1-vvLqCv7LgxKM6mou_HV-1lv8S8SxeFZ", protected: true, category: "Blue Shuttle", subcategory: "Week 2" },
+  { title: "05-Animating A Pendulum", type: "drive", id: "1WtbimRpQju4GDSP1xjRdGWWMhbE1EVGj", protected: true, category: "Blue Shuttle", subcategory: "Week 3", topic: "Secondary Motion" },
+  { title: "06-A Ball & His Tail | Part - 1", type: "drive", id: "1mr7DKUVRB25Pq5r2OF--9HHWld3qDwc7", protected: true, category: "Blue Shuttle", subcategory: "Week 3", topic: "Secondary Motion" },
+  { title: "07-A Ball & His Tail | Part - 2", type: "drive", id: "1EZXuEKGfZS_kSe78jhvD9n3zOKJAT-9c", protected: true, category: "Blue Shuttle", subcategory: "Week 3", topic: "Secondary Motion" },
+  { title: "08-The Lamp Jump", type: "drive", id: "1Nw6s3UrV-5z2STzSDWfAUoBXNSUeJE-a", protected: true, category: "Blue Shuttle", subcategory: "Week 4" },
+  { title: "09-Motion Trail", type: "drive", id: "1zx1fEskT7bLwQ9mjFc0oUXKuBhk5hESs", protected: true, category: "Blue Shuttle", subcategory: "Week 4" },
+  { title: "10-The Walk Cycle | Lyd 1", type: "drive", id: "1gfGiA_e-U-iPAFhE6UsQNM2RLJ0urQsF", protected: true, category: "Blue Shuttle", subcategory: "Week 5", topic: "Walk Cycle" },
+  { title: "11-The Walk Cycle | Lyd 2", type: "drive", id: "1QZlbF_4Ihp4nqIDuwjCpn52g0tUW4OTE", protected: true, category: "Blue Shuttle", subcategory: "Week 5", topic: "Walk Cycle" },
+  { title: "12-IK VS FK Body Mechanics Shot", type: "drive", id: "1m209yazDT8sEjbM_8RtbTxthgZ2Ny-of", protected: true, category: "Blue Shuttle", subcategory: "Week 6" },
+  { title: "13-Walk Cycle | Pose to Pose - P1", type: "drive", id: "1n4SvbDVwbHANbNhL8yi9-tt5H84zIbkt", protected: true, category: "Blue Shuttle", subcategory: "Week 6", topic: "Walk Cycle" },
+  { title: "14-Walk Cycle | Pose to Pose - P2", type: "drive", id: "1SKlMXo9CSRWOrBqo2wiNAtbl0ozDp2jm", protected: true, category: "Blue Shuttle", subcategory: "Week 6", topic: "Walk Cycle" },
+  { title: "15-Full Body Run - P1", type: "drive", id: "1vrrboIzmydFK4E-x79p3m0zROJKT7WZY", protected: true, category: "Blue Shuttle", subcategory: "Week 7", topic: "Run Cycle" },
+  { title: "16-Full Body Run - P2", type: "drive", id: "1pInFnCiD2XtbwpHjkxYB6-fxmZ2eP4WL", protected: true, category: "Blue Shuttle", subcategory: "Week 7", topic: "Run Cycle" },
+  { title: "17-Full Body Run - P3", type: "drive", id: "14WiMSIwMpPDl8uFs1hNQaiZO81eiaLFL", protected: true, category: "Blue Shuttle", subcategory: "Week 7", topic: "Run Cycle" },
+  { title: "18-Constraints - P1", type: "drive", id: "187NFHGql8eODcQuQjGuGJVlOQB2lfLJC", protected: true, category: "Blue Shuttle", subcategory: "Week 8" },
+  { title: "19-Constraints - P2", type: "drive", id: "1RQerCtoJ46h062t0Nd_wM2V0EuBn9mhB", protected: true, category: "Blue Shuttle", subcategory: "Week 8" },
+  { title: "20-Constraints - P3", type: "drive", id: "17dehY-J_MBLSpgiawvj1-RqpIC_nzTW3", protected: true, category: "Blue Shuttle", subcategory: "Week 8" },
+  { title: "Top 10 Animation Exercises", type: "youtube", url: "https://youtu.be/qFLsNoiZts0", protected: false, category: "Maya Animation", subcategory: "Animator's Journey" },
+  { title: "Walk Cycle | Rusty Animator", type: "youtube", url: "https://www.youtube.com/watch?v=STjKkhROdWE", category: "Maya Animation", subcategory: "Rusty Animator" },
+  { title: "Basic Ball with Tail Animation", type: "youtube", url: "https://youtu.be/RJfc7RIvIjk", category: "Maya Animation", subcategory: "Tips & Tricks" },
+  { title: "How to Use Reference Videos? | Koushik Chatterjee", type: "youtube", url: "https://youtu.be/vR57xYTQa_E", category: "Maya Animation", subcategory: "Koushik Chatterjee" },
+  { title: "Import video reference into Maya | Koushik Chatterjee", type: "youtube", url: "https://youtu.be/0w7_5UfrmHE", category: "Maya Animation", subcategory: "Koushik Chatterjee" },
+  { title: "Unlock the Secret to Perfect Splining Animation! | Koushik Chatterjee", type: "youtube", url: "https://youtu.be/Z6SSW5Kw9yo", category: "Maya Animation", subcategory: "Koushik Chatterjee" },
+  { title: "Animation Blocking - You are doing it Wrong! - Part 1 | Jean-Denis Haas", type: "youtube", url: "https://youtu.be/xJ7hmvbl_1c", category: "Maya Animation", subcategory: "Jean-Denis Haas" },
+  { title: "Animation Blocking - Cheat Sheet - Part 2 | Jean-Denis Haas", type: "youtube", url: "https://youtu.be/M3hGbCfb_r8", category: "Maya Animation", subcategory: "Jean-Denis Haas" },
+  { title: "Get rid of floaty movements and jerks from your animation | Koushik Chatterjee", type: "youtube", url: "https://youtu.be/WzKJOuzV7dE", category: "Maya Animation", subcategory: "Koushik Chatterjee" },
+  { title: "Front Walk Cycle Animation In After Effects | Jafar Fazel", type: "youtube", url: "https://youtu.be/UaWq3cEzrKc", category: "After Effects", subcategory: "Jafar Fazel" },
+  { title: "Front Run Cycle Animation In After Effects | Jafar Fazel", type: "youtube", url: "https://youtu.be/O0a_gu3lYXo", category: "After Effects", subcategory: "Jafar Fazel" },
+  { title: "Rotation", type: "drive", id: "1ISju-FvqfHc1mSVbkZKpbCP4hRr2NE-F", protected: false, category: "After Effects", subcategory: "Tips & Tricks" },
+  { title: "Lip Sync with Slider Control: No Plugins", type: "youtube", url: "https://youtu.be/GChTfGiO22I", category: "After Effects", subcategory: "Tips & Tricks" },
+  { title: "Follow through and overlapping Action", type: "youtube", url: "https://youtu.be/W64m8yx_8PA", category: "Principles Of Animation" },
+  { title: "The basics of Tail Motion | How to Animate a Tail", type: "youtube", url: "https://youtu.be/fcxRCX1DPKY", category: "Principles Of Animation" },
+  { title: "Mastering in Tail Animation", type: "youtube", url: "https://youtu.be/p_SASojvGZk", category: "Principles Of Animation" },
+  { title: "Animation for Beginners - Intro", type: "youtube", url: "https://youtu.be/P1rqa44WTFY?si=jcWttMZe_bFeegur", protected: false, category: "Animation For Beginners", subcategory:"Animation Lessons" },
+  { title: "Lesson 00: Course Introduction", type: "youtube", url: "https://youtu.be/pJzqjetM25o", protected: false, category: "Animation For Beginners" },
+  { title: "Lesson 01: What is Animation?", type: "youtube", url: "https://youtu.be/LT5kccitFM4", protected: false, category: "Animation For Beginners" },
+  { title: "Lesson 02: Timing, Spacing, Ease In & Ease Out", type: "youtube", url: "https://youtu.be/BN2xtAJkgf0", protected: false, category: "Animation For Beginners" },
+  { title: "Overlapping & Secondary Action | Alessandro Camporota", type: "youtube", url: "https://youtu.be/0fnOBuTG6kU", category: "Maya Animation", subcategory: " Alessandro Camporota", topic: "Basics" },
+  { title: "How I became a 3D animator (Part 1) : All my mistakes!", type: "youtube", url: "https://youtu.be/QRoqQdfJZ9s", category: "Maya Animation", subcategory: " Alessandro Camporota", topic: "Story" },
+  { title: "How I became a 3D animator (Part 2) : My Animation Mentor Experiences", type: "youtube", url: "https://youtu.be/le3F3unptsA?si=TGcjzSnaXPYOSoSK", category: "Maya Animation", subcategory: " Alessandro Camporota", topic: "Story" },
+  { title: "How I became a 3D animator (Part 3) : All my work experiences", type: "youtube", url: "https://youtu.be/4cSYENUj6Bk?si=99RKySCZUSB5n2kI", category: "Maya Animation", subcategory: " Alessandro Camporota", topic: "Story" },
+  { title: "Adding Path to Your Animation | Maya Motion Path", type: "youtube", url: "https://youtu.be/RKA09A_tJt4", category: "Maya Animation", subcategory: "Tips & Tricks" },
+  { title: "Marvel Animator teaches Animation! | Sap Serter", type: "youtube", url: "https://youtu.be/RfRyXTHO7zE", category: "Maya Animation", subcategory: "Tips & Tricks" },
+  { title: "Master Posing for Animators | Animators Journey", type: "youtube", url: "https://www.youtube.com/watch?v=VrFhQcmM0nw", category: "Maya Animation", subcategory: "Animator's Journey" },
+  { title: "Planning your Animation Shot - How to Animate", type: "youtube", url: "https://youtu.be/96vuZcWZYQE?si=1VGffzFZA7dAgp9o", category: "Maya Animation", subcategory: "RobynO"},
+  { title: "Teach Yourself Animation at Home for Free", type: "youtube", url: "https://youtu.be/9DqX13OeorQ?si=kR8HEwaayEQHkwRo", category: "Maya Animation", subcategory: "RobynO"},
+  { title: "Animation Tips and Techniques you Need to Know | Beginner to Intermediate", type: "youtube", url: "https://youtu.be/eXNvcL61Bmc", category: "Maya Animation", subcategory: "RobynO"},
+  { title: "Webinar - 01", type: "drive", id: "0B3pJhYGNijicMzNzclE0RV95LTQ", protected: true, category: "iAnimate", subcategory: "Fundamental Series"},
+  { title: "Webinar - 02", type: "drive", id: "0B3pJhYGNijicaTFiclJHdndZV0E", protected: true, category: "iAnimate", subcategory: "Fundamental Series"},
+  { title: "Webinar - 03", type: "drive", id: "0B3pJhYGNijicdDlaN1ZzTzltQVk", protected: true, category: "iAnimate", subcategory: "Fundamental Series"},
+  { title: "Tut-01_Bouncing Ball_Flipbook", type: "drive", id: "1djJL11KqCyh3XtFf996qbnp87SCqRIgf", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"01-Beginner"},
+  { title: "Tut-01_Bouncing Ball_Maya", type: "drive", id: "1qarFMBcnlzEbhfKTceNhFNhVkoT76w29", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"01-Beginner"},
+  { title: "Tut-02_Skip_Flipbook", type: "drive", id: "1-rvsea1aA7hGpyGOnUYZsis3SpL9WrUJ", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"01-Beginner"},
+  { title: "Tut-02_Skip_Maya", type: "drive", id: "19krCGako1AF8OWfTtJFTOeZlCHCGvlBm", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"01-Beginner"},
+  { title: "Tut-03_Jump_Flipbook", type: "drive", id: "1yAMc_TCOhcENa5qRtWVZTo3Me5Ifpo3u", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"01-Beginner"},
+  { title: "Tut-03_Jump_Maya", type: "drive", id: "1K6nXCwA-zzS8hX_JkfVAR_QwjQGP7NZN", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"01-Beginner"},
+  { title: "Tut-04_Walk_flipbook", type: "drive", id: "10T7YzN23fhLoxYVFOxbHdt7hA5uDzRuB", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"02-Mid"},
+  { title: "Tut-04_Walk_Maya", type: "drive", id: "107zO-e1M6T5NPywpQBQEhBEPWh0QV56g", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"02-Mid"},
+  { title: "Tut-05_Run_flipbook", type: "drive", id: "1usKFUCTej0Xtkg0eeh9OYzdvLCTCFnkY", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"02-Mid"},
+  { title: "Tut-05_Run_Maya", type: "drive", id: "1hoxXC20MwAKSm90cz88MA0rqHYNNnnyy", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"02-Mid"},
+  { title: "Tut-06_Side-Step_Flipbook", type: "drive", id: "1TfmqJsGLj0pp-9hUePxeZgJjr1Rgngop", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"02-Mid"},
+  { title: "Tut-06_Side-Step_Maya", type: "drive", id: "1-XJPrq9zbyZwiPyVLcZFw6aQSgnfPJxe", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"02-Mid"},
+  { title: "Tut-07_Highdive_Flipbook", type: "drive", id: "1Ar0s5q3B0XbQ1N3L6L7ObELPkK8TTFpU", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"02-Mid"},
+  { title: "Tut-07_Highdive_Maya", type: "drive", id: "1aC7h_8fWa-8BvxTRiV9Xa1TUW21evVmT", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"02-Mid"},
+  { title: "Tut-08_Tennis-serve_Flipbook", type: "drive", id: "1FnGferuEX7TXd_hRjEPuIsAGsbgTW_xA", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
+  { title: "Tut-08_Tennis-serve_Maya", type: "drive", id: "1WIfcC2Bi16SX5M4Ka6DKBJ98t2HJq3C-", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
+  { title: "Tut-09_Jump in perspective_Flipbook", type: "drive", id: "1nj0O2twvLbF9bUw0OHDL1jktn_aKwvHH", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
+  { title: "Tut-09_Jump in perspective_Maya", type: "drive", id: "1hRM0zNOHtsaH9wXQdj3vCWbiRWMQfNOB", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
+  { title: "Tut-10_Weight-push_Flipbook", type: "drive", id: "11CYT2fbSi5ru14LfKVCxovLJF1Uj9nQG", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
+  { title: "Tut-10_Weight-push_Maya", type: "drive", id: "17fRMXQthnbB9f_fTF8gEwutkjgwulXC9", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
+  { title: "Tut-11_Gun on the ball_Flipbook", type: "drive", id: "1Lz-P4b2D_lLX5-hGAdhBGsTPqYWyJ9Ji", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
+  { title: "Tut-11_Guy on the ball_Maya", type: "drive", id: "1zfvF0Kb8gw_E784R3OB8BFmrYX72SbKW", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
+  { title: "Tut-12_Run to fast_Flipbook", type: "drive", id: "1rCxw09IT1xEJwMDeVXMjcTseo7ov97XL", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
+  { title: "Tut-12_Run to fast_Maya", type: "drive", id: "1InpBQ4uQN4z_BQ45c0u_cfJ-HPD7FYWI", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
+  { title: "Overlap in Maya-01", type: "drive", id: "16Flb34WRzLWqx5SoIBr43NsaQkMzpMoW", protected: true, category: "iAnimate", subcategory: "Ramup_Basics"},
+  { title: "Overlap in Maya-02", type: "drive", id: "1vNBhmmfAjos8BA2gLYd8B7Lh2ANutkBF", protected: true, category: "iAnimate", subcategory: "Ramup_Basics"},
+  { title: "Timing & Spacing-01", type: "drive", id: "17rCO1foxA21Rgai5SjZfm6x4nBSHNb1s", protected: true, category: "iAnimate", subcategory: "Ramup_Basics"},
+  { title: "Timing & Spacing-02", type: "drive", id: "1ExpZTdxM_caQ1v_ly6jn0HWv8OxvrcQa", protected: true, category: "iAnimate", subcategory: "Ramup_Basics"},
+  { title: "Blocking workflow & simplifying animations | Koushik Chatterjee", type: "youtube", url: "https://youtu.be/rWxeZbwEV70", category: "Maya Animation", subcategory: "Koushik Chatterjee" }
+];
 
-      { title: "VTS 01: Poses Part I", type: "youtube", url: "https://youtu.be/CaZiyqF1__Y?si=bFWuv_eU-B7HOvWo",protected: false, category: "Keith Lango", subcategory: "VTS Animation Tutorials"},
+const VIDEO_PASSWORD = "Animator";
 
+// DOM
+const sidebar = document.getElementById('sidebar');
+const sidebarToggle = document.getElementById('sidebarToggle');
+const mainLayout = document.getElementById('mainLayout');
+const searchBox = document.getElementById('searchBox');
+const clearSearchBtn = document.getElementById('clearSearch');
+const titleList = document.getElementById('titleList');
+const currentTitle = document.getElementById('currentTitle');
+const currentSource = document.getElementById('currentSource');
+const videoFrame = document.getElementById('videoFrame');
+const videoContainer = document.getElementById('videoContainer');
+const passwordModal = document.getElementById('passwordModal');
+const videoPassword = document.getElementById('videoPassword');
+const submitPassword = document.getElementById('submitPassword');
+const cancelPassword = document.getElementById('cancelPassword');
+const passwordError = document.getElementById('passwordError');
+const headerTitle = document.getElementById('headerTitle');
 
-      { title: "01. Getting good timing during blocking", type: "youtube", url: "https://youtu.be/VJDoS2h1pZM?si=SlaQM62PK8JryZhn", protected: false, category: "Kenny Roy Animation"},
+// Popup elements
+const videoPopupModal = document.getElementById('videoPopupModal');
+const popupVideoFrame = document.getElementById('popupVideoFrame');
+const popupTitle = document.getElementById('popupTitle');
+const closePopupBtn = document.getElementById('closePopup');
+const popupToggle = document.getElementById('popupToggle');
 
+let pendingVideo = null;
+let activeItem = null;
+let sidebarVisible = true;
+let currentVideo = null;
+let usePopupMode = false;
 
-      { title: "01. The Importance of Body Mechanics", type: "youtube", url: "https://youtu.be/-75GYRGp1H4", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
-      { title: "02. Using Reference", type: "youtube", url: "https://youtu.be/sRf3HoXLpbs", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12"  },
-      { title: "03. Walk cycle - Part 1", type: "youtube", url: "https://youtu.be/N8woJ96dpXM", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
-      { title: "04. Walk cycle - Part 2", type: "youtube", url: "https://youtu.be/_Bujg-tP17M", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
-      { title: "05. Side Step - Part 1", type: "youtube", url: "https://youtu.be/VQqNmjBaykE", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
-      { title: "06. Side Step - Part 2", type: "youtube", url: "https://youtu.be/ufbD3cQVXoc", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
-      { title: "07. Sitting Down - Part 1", type: "youtube", url: "https://youtu.be/H5hHIvczLNs", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
-      { title: "08. Sitting Down - Part 2", type: "youtube", url: "https://youtu.be/Ex8ampUS4mw", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
-      { title: "09. Heavy Lift or Push - Part 1", type: "youtube", url: "https://youtu.be/XENUuoA0O0c", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
-      { title: "10. Heavy Lift or Push - Part 2", type: "youtube", url: "https://youtu.be/4zDOZ_XMAC8", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
-      { title: "11. Heavy Lift or Push - Part 3", type: "youtube", url: "https://youtu.be/-eSDp-5PAOk", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
-      { title: "12. Course Review", type: "youtube", url: "https://youtu.be/cb6_io8ZF3A", protected: true, category: "CG Tarian", subcategory: "Character In Motion", topic: "Lecture |Week 1-12" },
-      
-      { title: "01-A Lamp & A Ball | Part - 1", type: "drive", id: "1E47FngraJieAL3SjqxZ0k1zPo_J-LcNW", protected: true, category: "Blue Shuttle", subcategory: "Week 1" },
-      { title: "02-A Lamp & A Ball | Part - 2", type: "drive", id: "1m9xjrGfY38T8fB0LFVidLEhgaZ1tkPjX", protected: true, category: "Blue Shuttle", subcategory: "Week 1" },
-      { title: "03-The Graph Editor", type: "drive", id: "1mUMXroAUQMYNTIf-g12I84bfBrNYLM0u", protected: true, category: "Blue Shuttle", subcategory: "Week 2" },
-      { title: "04-The Bouncing Ball", type: "drive", id: "1-vvLqCv7LgxKM6mou_HV-1lv8S8SxeFZ", protected: true, category: "Blue Shuttle", subcategory: "Week 2" },
-      { title: "05-Animating A Pendulum", type: "drive", id: "1WtbimRpQju4GDSP1xjRdGWWMhbE1EVGj", protected: true, category: "Blue Shuttle", subcategory: "Week 3", topic: "Secondary Motion" },
-      { title: "06-A Ball & His Tail | Part - 1", type: "drive", id: "1mr7DKUVRB25Pq5r2OF--9HHWld3qDwc7", protected: true, category: "Blue Shuttle", subcategory: "Week 3", topic: "Secondary Motion" },
-      { title: "07-A Ball & His Tail | Part - 2", type: "drive", id: "1EZXuEKGfZS_kSe78jhvD9n3zOKJAT-9c", protected: true, category: "Blue Shuttle", subcategory: "Week 3", topic: "Secondary Motion" },
-      { title: "08-The Lamp Jump", type: "drive", id: "1Nw6s3UrV-5z2STzSDWfAUoBXNSUeJE-a", protected: true, category: "Blue Shuttle", subcategory: "Week 4" },
-      { title: "09-Motion Trail", type: "drive", id: "1zx1fEskT7bLwQ9mjFc0oUXKuBhk5hESs", protected: true, category: "Blue Shuttle", subcategory: "Week 4" },
-      { title: "10-The Walk Cycle | Lyd 1", type: "drive", id: "1gfGiA_e-U-iPAFhE6UsQNM2RLJ0urQsF", protected: true, category: "Blue Shuttle", subcategory: "Week 5", topic: "Walk Cycle" },
-      { title: "11-The Walk Cycle | Lyd 2", type: "drive", id: "1QZlbF_4Ihp4nqIDuwjCpn52g0tUW4OTE", protected: true, category: "Blue Shuttle", subcategory: "Week 5", topic: "Walk Cycle" },
-      { title: "12-IK VS FK Body Mechanics Shot", type: "drive", id: "1m209yazDT8sEjbM_8RtbTxthgZ2Ny-of", protected: true, category: "Blue Shuttle", subcategory: "Week 6" },
-      { title: "13-Walk Cycle | Pose to Pose - P1", type: "drive", id: "1n4SvbDVwbHANbNhL8yi9-tt5H84zIbkt", protected: true, category: "Blue Shuttle", subcategory: "Week 6", topic: "Walk Cycle" },
-      { title: "14-Walk Cycle | Pose to Pose - P2", type: "drive", id: "1SKlMXo9CSRWOrBqo2wiNAtbl0ozDp2jm", protected: true, category: "Blue Shuttle", subcategory: "Week 6", topic: "Walk Cycle" },
-      { title: "15-Full Body Run - P1", type: "drive", id: "1vrrboIzmydFK4E-x79p3m0zROJKT7WZY", protected: true, category: "Blue Shuttle", subcategory: "Week 7", topic: "Run Cycle" },
-      { title: "16-Full Body Run - P2", type: "drive", id: "1pInFnCiD2XtbwpHjkxYB6-fxmZ2eP4WL", protected: true, category: "Blue Shuttle", subcategory: "Week 7", topic: "Run Cycle" },
-      { title: "17-Full Body Run - P3", type: "drive", id: "14WiMSIwMpPDl8uFs1hNQaiZO81eiaLFL", protected: true, category: "Blue Shuttle", subcategory: "Week 7", topic: "Run Cycle" },
-      { title: "18-Constraints - P1", type: "drive", id: "187NFHGql8eODcQuQjGuGJVlOQB2lfLJC", protected: true, category: "Blue Shuttle", subcategory: "Week 8" },
-      { title: "19-Constraints - P2", type: "drive", id: "1RQerCtoJ46h062t0Nd_wM2V0EuBn9mhB", protected: true, category: "Blue Shuttle", subcategory: "Week 8" },
-      { title: "20-Constraints - P3", type: "drive", id: "17dehY-J_MBLSpgiawvj1-RqpIC_nzTW3", protected: true, category: "Blue Shuttle", subcategory: "Week 8" },
-      
-      { title: "Top 10 Animation Exercises", type: "youtube", url: "https://youtu.be/qFLsNoiZts0", protected: false, category: "Maya Animation", subcategory: "Animator's Journey" },
-      { title: "Walk Cycle | Rusty Animator", type: "youtube", url: "https://www.youtube.com/watch?v=STjKkhROdWE", category: "Maya Animation", subcategory: "Rusty Animator" },
-      { title: "Basic Ball with Tail Animation", type: "youtube", url: "https://youtu.be/RJfc7RIvIjk", category: "Maya Animation", subcategory: "Tips & Tricks" },
-      { title: "How to Use Reference Videos? | Koushik Chatterjee", type: "youtube", url: "https://youtu.be/vR57xYTQa_E", category: "Maya Animation", subcategory: "Koushik Chatterjee" },
-      { title: "Import video reference into Maya | Koushik Chatterjee", type: "youtube", url: "https://youtu.be/0w7_5UfrmHE", category: "Maya Animation", subcategory: "Koushik Chatterjee" },
-      { title: "Unlock the Secret to Perfect Splining Animation! | Koushik Chatterjee", type: "youtube", url: "https://youtu.be/Z6SSW5Kw9yo", category: "Maya Animation", subcategory: "Koushik Chatterjee" },
-      { title: "Animation Blocking - You are doing it Wrong! - Part 1 | Jean-Denis Haas", type: "youtube", url: "https://youtu.be/xJ7hmvbl_1c", category: "Maya Animation", subcategory: "Jean-Denis Haas" },
-      { title: "Animation Blocking - Cheat Sheet - Part 2 | Jean-Denis Haas", type: "youtube", url: "https://youtu.be/M3hGbCfb_r8", category: "Maya Animation", subcategory: "Jean-Denis Haas" },
-      { title: "Get rid of floaty movements and jerks from your animation | Koushik Chatterjee", type: "youtube", url: "https://youtu.be/WzKJOuzV7dE", category: "Maya Animation", subcategory: "Koushik Chatterjee" },
-      
-      { title: "Front Walk Cycle Animation In After Effects | Jafar Fazel", type: "youtube", url: "https://youtu.be/UaWq3cEzrKc", category: "After Effects", subcategory: "Jafar Fazel" },
-      { title: "Front Run Cycle Animation In After Effects | Jafar Fazel", type: "youtube", url: "https://youtu.be/O0a_gu3lYXo", category: "After Effects", subcategory: "Jafar Fazel" },
-      { title: "Rotation", type: "drive", id: "1ISju-FvqfHc1mSVbkZKpbCP4hRr2NE-F", protected: false, category: "After Effects", subcategory: "Tips & Tricks" },
-      { title: "Lip Sync with Slider Control: No Plugins", type: "youtube", url: "https://youtu.be/GChTfGiO22I", category: "After Effects", subcategory: "Tips & Tricks" },
+// State for grouping
+let categoryStates = {};
+let subcategoryStates = {};
+let topicStates = {};
+const allCats = [...new Set(videos.map(v => v.category || "Uncategorized"))];
+allCats.forEach(cat => {
+  categoryStates[cat] = false;
+  subcategoryStates[cat] = {};
+  topicStates[cat] = {};
+});
 
-      { title: "Follow through and overlapping Action", type: "youtube", url: "https://youtu.be/W64m8yx_8PA", category: "Principles Of Animation" },
-      { title: "The basics of Tail Motion | How to Animate a Tail", type: "youtube", url: "https://youtu.be/fcxRCX1DPKY", category: "Principles Of Animation" },
-      { title: "Mastering in Tail Animation", type: "youtube", url: "https://youtu.be/p_SASojvGZk", category: "Principles Of Animation" },
-
-      { title: "Animation for Beginners - Intro", type: "youtube", url: "https://youtu.be/P1rqa44WTFY?si=jcWttMZe_bFeegur", protected: false, category: "Animation For Beginners", subcategory:"Animation Lessons" },
-     
-      { title: "Lesson 00: Course Introduction", type: "youtube", url: "https://youtu.be/pJzqjetM25o", protected: false, category: "Animation For Beginners" },
-      { title: "Lesson 01: What is Animation?", type: "youtube", url: "https://youtu.be/LT5kccitFM4", protected: false, category: "Animation For Beginners" },
-      { title: "Lesson 02: Timing, Spacing, Ease In & Ease Out", type: "youtube", url: "https://youtu.be/BN2xtAJkgf0", protected: false, category: "Animation For Beginners" },
-
-      { title: "Overlapping & Secondary Action | Alessandro Camporota", type: "youtube", url: "https://youtu.be/0fnOBuTG6kU", category: "Maya Animation", subcategory: " Alessandro Camporota", topic: "Basics" },
-      { title: "How I became a 3D animator (Part 1) : All my mistakes!", type: "youtube", url: "https://youtu.be/QRoqQdfJZ9s", category: "Maya Animation", subcategory: " Alessandro Camporota", topic: "Story" },
-      { title: "How I became a 3D animator (Part 2) : My Animation Mentor Experiences", type: "youtube", url: "https://youtu.be/le3F3unptsA?si=TGcjzSnaXPYOSoSK", category: "Maya Animation", subcategory: " Alessandro Camporota", topic: "Story" },
-      { title: "How I became a 3D animator (Part 3) : All my work experiences", type: "youtube", url: "https://youtu.be/4cSYENUj6Bk?si=99RKySCZUSB5n2kI", category: "Maya Animation", subcategory: " Alessandro Camporota", topic: "Story" },
-
-      
-      { title: "Adding Path to Your Animation | Maya Motion Path", type: "youtube", url: "https://youtu.be/RKA09A_tJt4", category: "Maya Animation", subcategory: "Tips & Tricks" },
-      { title: "Marvel Animator teaches Animation! | Sap Serter", type: "youtube", url: "https://youtu.be/RfRyXTHO7zE", category: "Maya Animation", subcategory: "Tips & Tricks" },
-      
-      { title: "Master Posing for Animators | Animators Journey", type: "youtube", url: "https://www.youtube.com/watch?v=VrFhQcmM0nw", category: "Maya Animation", subcategory: "Animator's Journey" },
-      
-      { title: "Planning your Animation Shot - How to Animate", type: "youtube", url: "https://youtu.be/96vuZcWZYQE?si=1VGffzFZA7dAgp9o", category: "Maya Animation", subcategory: "RobynO"},
-      { title: "Teach Yourself Animation at Home for Free", type: "youtube", url: "https://youtu.be/9DqX13OeorQ?si=kR8HEwaayEQHkwRo", category: "Maya Animation", subcategory: "RobynO"},
-      { title: "Animation Tips and Techniques you Need to Know | Beginner to Intermediate", type: "youtube", url: "https://youtu.be/eXNvcL61Bmc", category: "Maya Animation", subcategory: "RobynO"},
-
-      { title: "Webinar - 01", type: "drive", id: "0B3pJhYGNijicMzNzclE0RV95LTQ", protected: true, category: "iAnimate", subcategory: "Fundamental Series"},
-      { title: "Webinar - 02", type: "drive", id: "0B3pJhYGNijicaTFiclJHdndZV0E", protected: true, category: "iAnimate", subcategory: "Fundamental Series"},
-      { title: "Webinar - 03", type: "drive", id: "0B3pJhYGNijicdDlaN1ZzTzltQVk", protected: true, category: "iAnimate", subcategory: "Fundamental Series"},
-      
-      { title: "Tut-01_Bouncing Ball_Flipbook", type: "drive", id: "1djJL11KqCyh3XtFf996qbnp87SCqRIgf", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"01-Beginner"},
-      { title: "Tut-01_Bouncing Ball_Maya", type: "drive", id: "1qarFMBcnlzEbhfKTceNhFNhVkoT76w29", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"01-Beginner"},
-      { title: "Tut-02_Skip_Flipbook", type: "drive", id: "1-rvsea1aA7hGpyGOnUYZsis3SpL9WrUJ", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"01-Beginner"},
-      { title: "Tut-02_Skip_Maya", type: "drive", id: "19krCGako1AF8OWfTtJFTOeZlCHCGvlBm", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"01-Beginner"},
-      { title: "Tut-03_Jump_Flipbook", type: "drive", id: "1yAMc_TCOhcENa5qRtWVZTo3Me5Ifpo3u", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"01-Beginner"},
-      { title: "Tut-03_Jump_Maya", type: "drive", id: "1K6nXCwA-zzS8hX_JkfVAR_QwjQGP7NZN", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"01-Beginner"},
-      { title: "Tut-04_Walk_flipbook", type: "drive", id: "10T7YzN23fhLoxYVFOxbHdt7hA5uDzRuB", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"02-Mid"},
-      { title: "Tut-04_Walk_Maya", type: "drive", id: "107zO-e1M6T5NPywpQBQEhBEPWh0QV56g", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"02-Mid"},
-      { title: "Tut-05_Run_flipbook", type: "drive", id: "1usKFUCTej0Xtkg0eeh9OYzdvLCTCFnkY", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"02-Mid"},
-      { title: "Tut-05_Run_Maya", type: "drive", id: "1hoxXC20MwAKSm90cz88MA0rqHYNNnnyy", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"02-Mid"},
-      { title: "Tut-06_Side-Step_Flipbook", type: "drive", id: "1TfmqJsGLj0pp-9hUePxeZgJjr1Rgngop", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"02-Mid"},
-      { title: "Tut-06_Side-Step_Maya", type: "drive", id: "1-XJPrq9zbyZwiPyVLcZFw6aQSgnfPJxe", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"02-Mid"},
-      { title: "Tut-07_Highdive_Flipbook", type: "drive", id: "1Ar0s5q3B0XbQ1N3L6L7ObELPkK8TTFpU", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"02-Mid"},
-      { title: "Tut-07_Highdive_Maya", type: "drive", id: "1aC7h_8fWa-8BvxTRiV9Xa1TUW21evVmT", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"02-Mid"},
-      { title: "Tut-08_Tennis-serve_Flipbook", type: "drive", id: "1FnGferuEX7TXd_hRjEPuIsAGsbgTW_xA", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
-      { title: "Tut-08_Tennis-serve_Maya", type: "drive", id: "1WIfcC2Bi16SX5M4Ka6DKBJ98t2HJq3C-", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
-      { title: "Tut-09_Jump in perspective_Flipbook", type: "drive", id: "1nj0O2twvLbF9bUw0OHDL1jktn_aKwvHH", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
-      { title: "Tut-09_Jump in perspective_Maya", type: "drive", id: "1hRM0zNOHtsaH9wXQdj3vCWbiRWMQfNOB", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
-      { title: "Tut-10_Weight-push_Flipbook", type: "drive", id: "11CYT2fbSi5ru14LfKVCxovLJF1Uj9nQG", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
-      { title: "Tut-10_Weight-push_Maya", type: "drive", id: "17fRMXQthnbB9f_fTF8gEwutkjgwulXC9", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
-      { title: "Tut-11_Gun on the ball_Flipbook", type: "drive", id: "1Lz-P4b2D_lLX5-hGAdhBGsTPqYWyJ9Ji", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
-      { title: "Tut-11_Guy on the ball_Maya", type: "drive", id: "1zfvF0Kb8gw_E784R3OB8BFmrYX72SbKW", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
-      { title: "Tut-12_Run to fast_Flipbook", type: "drive", id: "1rCxw09IT1xEJwMDeVXMjcTseo7ov97XL", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
-      { title: "Tut-12_Run to fast_Maya", type: "drive", id: "1InpBQ4uQN4z_BQ45c0u_cfJ-HPD7FYWI", protected: true, category: "iAnimate", subcategory: "Jason Ryan", topic:"03-Advanced"},
-
-      { title: "Overlap in Maya-01", type: "drive", id: "16Flb34WRzLWqx5SoIBr43NsaQkMzpMoW", protected: true, category: "iAnimate", subcategory: "Ramup_Basics"},
-      { title: "Overlap in Maya-02", type: "drive", id: "1vNBhmmfAjos8BA2gLYd8B7Lh2ANutkBF", protected: true, category: "iAnimate", subcategory: "Ramup_Basics"},
-      { title: "Timing & Spacing-01", type: "drive", id: "17rCO1foxA21Rgai5SjZfm6x4nBSHNb1s", protected: true, category: "iAnimate", subcategory: "Ramup_Basics"},
-      { title: "Timing & Spacing-02", type: "drive", id: "1ExpZTdxM_caQ1v_ly6jn0HWv8OxvrcQa", protected: true, category: "iAnimate", subcategory: "Ramup_Basics"},
-     
-      { title: "Blocking workflow & simplifying animations | Koushik Chatterjee", type: "youtube", url: "https://youtu.be/rWxeZbwEV70", category: "Maya Animation", subcategory: "Koushik Chatterjee" }
-    ];
-
-    const VIDEO_PASSWORD = "Animator";
-
-    const sidebar = document.getElementById('sidebar');
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const mainLayout = document.getElementById('mainLayout');
-    const searchBox = document.getElementById('searchBox');
-    const clearSearchBtn = document.getElementById('clearSearch');
-    const titleList = document.getElementById('titleList');
-    const currentTitle = document.getElementById('currentTitle');
-    const currentSource = document.getElementById('currentSource');
-    const videoFrame = document.getElementById('videoFrame');
-    const videoContainer = document.getElementById('videoContainer');
-    const passwordModal = document.getElementById('passwordModal');
-    const videoPassword = document.getElementById('videoPassword');
-    const submitPassword = document.getElementById('submitPassword');
-    const cancelPassword = document.getElementById('cancelPassword');
-    const passwordError = document.getElementById('passwordError');
-    const headerTitle = document.getElementById('headerTitle');
-
-    let pendingVideo = null;
-    let activeItem = null;
-    let sidebarVisible = true;
-
-    // State for 3 levels
-    let categoryStates = {};
-    let subcategoryStates = {};
-    let topicStates = {};
-
-    const allCats = [...new Set(videos.map(v => v.category || "Uncategorized"))];
-    allCats.forEach(cat => {
-      categoryStates[cat] = false;
-      subcategoryStates[cat] = {};
-      topicStates[cat] = {};
-    });
-
-    function toggleSidebar() {
-      sidebarVisible = !sidebarVisible;
-      sidebar.classList.toggle('hidden', !sidebarVisible);
-      mainLayout.classList.toggle('centered', !sidebarVisible);
-
-      const icon = sidebarToggle.querySelector('i');
-      if (sidebarVisible) {
-        icon.className = 'fas fa-bars';
-        sidebarToggle.title = 'Toggle sidebar (Ctrl+E)';
-      } else {
-        icon.className = 'fas fa-times';
-        sidebarToggle.title = 'Toggle sidebar (Ctrl+E)';
-      }
-    }
-
-    sidebarToggle.addEventListener('click', toggleSidebar);
-
-    document.addEventListener('keydown', (e) => {
-      if (e.ctrlKey && e.key === 'e') {
-        e.preventDefault();
-        toggleSidebar();
-      }
-      if (e.key === 'Escape') {
-        if (passwordModal.style.display === 'flex') {
-          passwordModal.style.display = 'none';
-          pendingVideo = null;
-        }
-      }
-    });
-
-    function resetPage() {
-      searchBox.value = '';
-      clearSearchBtn.style.display = 'none';
-      
-      allCats.forEach(cat => {
-        categoryStates[cat] = false;
-        subcategoryStates[cat] = {};
-        topicStates[cat] = {};
-      });
-      
-      renderGroupedList(videos, false);
-      
-      if (activeItem) {
-        activeItem.classList.remove('active');
-        activeItem = null;
-      }
-      
-      videoFrame.src = '';
-      currentTitle.textContent = 'Lesson Details';
-      currentSource.textContent = '';
-      videoContainer.classList.remove('video-active');
-      
+// Toggle sidebar
+function toggleSidebar() {
+  sidebarVisible = !sidebarVisible;
+  sidebar.classList.toggle('hidden', !sidebarVisible);
+  mainLayout.classList.toggle('centered', !sidebarVisible);
+  const icon = sidebarToggle.querySelector('i');
+  icon.className = sidebarVisible ? 'fas fa-bars' : 'fas fa-times';
+  sidebarToggle.title = 'Toggle sidebar (Ctrl+E)';
+}
+sidebarToggle.addEventListener('click', toggleSidebar);
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.key === 'e') {
+    e.preventDefault();
+    toggleSidebar();
+  }
+  if (e.key === 'Escape') {
+    if (passwordModal.style.display === 'flex') {
       passwordModal.style.display = 'none';
       pendingVideo = null;
-      
-      if (!sidebarVisible) {
-        sidebarVisible = true;
-        sidebar.classList.remove('hidden');
-        mainLayout.classList.remove('centered');
-        const icon = sidebarToggle.querySelector('i');
-        icon.className = 'fas fa-bars';
-        sidebarToggle.title = 'Toggle sidebar (Ctrl+E)';
-      }
-      
-      searchBox.focus();
     }
-
-    headerTitle.addEventListener('click', resetPage);
-
-    function getYouTubeId(url) {
-      const cleanUrl = url.trim();
-      const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-      const match = cleanUrl.match(regExp);
-      return (match && match[2].length === 11) ? match[2] : null;
-    }
-
-    function getEmbedUrl(video) {
-      if (video.type === "youtube") {
-        const id = getYouTubeId(video.url);
-        return id ? `https://www.youtube.com/embed/${id}?autoplay=1` : null;
-      } else if (video.type === "drive") {
-        const fileId = (video.id || "").trim();
-        if (!fileId) return null;
-        return `https://drive.google.com/file/d/${fileId}/preview`;
-      }
-      return null;
-    }
-
-    function getSourceLabel(type) {
-      return type === "youtube" ? "YouTube" : "Google Drive";
-    }
-
-    function loadVideo(video) {
-      const embedUrl = getEmbedUrl(video);
-      if (embedUrl) {
-        currentTitle.textContent = video.title;
-        currentSource.textContent = `Source: ${getSourceLabel(video.type)}`;
-        videoFrame.src = embedUrl;
-        videoContainer.classList.add('video-active');
-      } else {
-        currentTitle.textContent = "Video Not Available";
-        currentSource.textContent = video.type === "drive" 
-          ? "Google Drive file ID is missing or invalid." 
-          : "Invalid YouTube URL.";
-        videoFrame.src = "";
-        videoContainer.classList.remove('video-active');
+    if (videoPopupModal.style.display === 'flex') {
+      videoPopupModal.style.display = 'none';
+      popupVideoFrame.src = '';
+      usePopupMode = false;
+      popupToggle.checked = false;
+      if (currentVideo) {
+        loadVideo(currentVideo); // reload inline
       }
     }
+  }
+});
 
-    function selectVideo(video, element) {
-      if (activeItem) activeItem.classList.remove('active');
-      if (element) {
-        element.classList.add('active');
-        activeItem = element;
-      }
+// Reset UI
+function resetPage() {
+  searchBox.value = '';
+  clearSearchBtn.style.display = 'none';
+  allCats.forEach(cat => {
+    categoryStates[cat] = false;
+    subcategoryStates[cat] = {};
+    topicStates[cat] = {};
+  });
+  renderGroupedList(videos, false);
+  if (activeItem) activeItem.classList.remove('active');
+  activeItem = null;
+  videoFrame.src = '';
+  currentTitle.textContent = 'Lesson Details';
+  currentSource.textContent = '';
+  videoContainer.classList.remove('video-active');
+  passwordModal.style.display = 'none';
+  pendingVideo = null;
+  if (videoPopupModal.style.display === 'flex') {
+    videoPopupModal.style.display = 'none';
+    popupVideoFrame.src = '';
+  }
+  if (!sidebarVisible) toggleSidebar();
+  searchBox.focus();
+}
+headerTitle.addEventListener('click', resetPage);
 
-      if (video.protected) {
-        pendingVideo = video;
-        passwordModal.style.display = 'flex';
-        videoPassword.value = '';
-        passwordError.style.display = 'none';
-        videoPassword.focus();
-      } else {
-        loadVideo(video);
-      }
-    }
+// YouTube ID
+function getYouTubeId(url) {
+  const cleanUrl = url.trim();
+  const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = cleanUrl.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
 
-    function createTitleItem(video) {
-      const item = document.createElement('div');
-      item.className = 'title-item';
-      if (video.protected) item.classList.add('protected');
-      item.innerHTML = `<i class="fas ${video.protected ? 'fa-lock' : 'fa-play'}"></i> ${video.title}`;
-      item.addEventListener('click', () => selectVideo(video, item));
-      return item;
-    }
+// Embed URL
+function getEmbedUrl(video) {
+  if (video.type === "youtube") {
+    const id = getYouTubeId(video.url);
+    return id ? `https://www.youtube.com/embed/${id}?autoplay=1` : null;
+  } else if (video.type === "drive") {
+    const fileId = (video.id || "").trim();
+    return fileId ? `https://drive.google.com/file/d/${fileId}/preview` : null;
+  }
+  return null;
+}
 
-    function renderGroupedList(videoList, isSearching = false) {
-      if (isSearching) {
-        titleList.innerHTML = '';
-        videoList.forEach(video => {
-          const item = createTitleItem(video);
-          let label = video.title;
-          if (video.category) label = `[${video.category}] ${label}`;
-          if (video.subcategory) label = `${label} (${video.subcategory})`;
-          if (video.topic) label = `${label} — ${video.topic}`;
-          item.innerHTML = `<i class="fas ${video.protected ? 'fa-lock' : 'fa-play'}"></i> ${label}`;
-          titleList.appendChild(item);
-        });
-        return;
-      }
+// Source label
+function getSourceLabel(type) {
+  return type === "youtube" ? "YouTube" : "Google Drive";
+}
 
-      // Group: category → subcategory → topic → videos
-      const grouped = {};
-      videoList.forEach(video => {
-        const cat = video.category || "Uncategorized";
-        const sub = video.subcategory || "__NO_SUB__";
-        const top = video.topic || "__NO_TOPIC__";
+// Load Video
+function loadVideo(video) {
+  currentVideo = video;
+  const embedUrl = getEmbedUrl(video);
+  if (!embedUrl) {
+    currentTitle.textContent = "Video Not Available";
+    currentSource.textContent = video.type === "drive"
+      ? "Google Drive file ID is missing or invalid."
+      : "Invalid YouTube URL.";
+    videoFrame.src = "";
+    videoContainer.classList.remove('video-active');
+    return;
+  }
 
-        if (!grouped[cat]) grouped[cat] = {};
-        if (!grouped[cat][sub]) grouped[cat][sub] = {};
-        if (!grouped[cat][sub][top]) grouped[cat][sub][top] = [];
-        grouped[cat][sub][top].push(video);
-      });
+  if (usePopupMode) {
+    popupTitle.textContent = video.title;
+    popupVideoFrame.src = embedUrl;
+    videoPopupModal.style.display = 'flex';
+    videoFrame.src = '';
+    videoContainer.classList.remove('video-active');
+  } else {
+    currentTitle.textContent = video.title;
+    currentSource.textContent = `Source: ${getSourceLabel(video.type)}`;
+    videoFrame.src = embedUrl;
+    videoContainer.classList.add('video-active');
+  }
+}
 
-      titleList.innerHTML = '';
-      const cats = Object.keys(grouped).sort();
+// Select video
+function selectVideo(video, element) {
+  if (activeItem) activeItem.classList.remove('active');
+  if (element) {
+    element.classList.add('active');
+    activeItem = element;
+  }
+  if (video.protected) {
+    pendingVideo = video;
+    passwordModal.style.display = 'flex';
+    videoPassword.value = '';
+    passwordError.style.display = 'none';
+    videoPassword.focus();
+  } else {
+    loadVideo(video);
+  }
+}
 
-      cats.forEach(cat => {
-        const isCatOpen = categoryStates[cat] || false;
-        const catHeader = document.createElement('div');
-        catHeader.className = 'category-header';
-        catHeader.innerHTML = `<i class="fas fa-chevron-right chevron ${isCatOpen ? 'rotated' : ''}"></i> ${cat}`;
-        titleList.appendChild(catHeader);
+// Create list item
+function createTitleItem(video) {
+  const item = document.createElement('div');
+  item.className = 'title-item';
+  if (video.protected) item.classList.add('protected');
+  item.innerHTML = `<i class="fas ${video.protected ? 'fa-lock' : 'fa-play'}"></i> ${video.title}`;
+  item.addEventListener('click', () => selectVideo(video, item));
+  return item;
+}
 
-        const catContainer = document.createElement('div');
-        catContainer.className = 'category-items';
-        if (isCatOpen) catContainer.classList.add('expanded');
+// Render list
+function renderGroupedList(videoList, isSearching = false) {
+  if (isSearching) {
+    titleList.innerHTML = '';
+    videoList.forEach(video => {
+      const item = createTitleItem(video);
+      let label = video.title;
+      if (video.category) label = `[${video.category}] ${label}`;
+      if (video.subcategory) label = `${label} (${video.subcategory})`;
+      if (video.topic) label = `${label} — ${video.topic}`;
+      item.innerHTML = `<i class="fas ${video.protected ? 'fa-lock' : 'fa-play'}"></i> ${label}`;
+      titleList.appendChild(item);
+    });
+    return;
+  }
 
-        const subs = Object.keys(grouped[cat]).sort((a, b) => {
-          if (a === "__NO_SUB__") return -1;
-          if (b === "__NO_SUB__") return 1;
-          return a.localeCompare(b);
-        });
+  const grouped = {};
+  videoList.forEach(video => {
+    const cat = video.category || "Uncategorized";
+    const sub = video.subcategory || "__NO_SUB__";
+    const top = video.topic || "__NO_TOPIC__";
+    if (!grouped[cat]) grouped[cat] = {};
+    if (!grouped[cat][sub]) grouped[cat][sub] = {};
+    if (!grouped[cat][sub][top]) grouped[cat][sub][top] = [];
+    grouped[cat][sub][top].push(video);
+  });
 
-        subs.forEach(sub => {
-          const topics = grouped[cat][sub];
-          if (sub === "__NO_SUB__") {
-            // No subcategory: render topics or videos directly
-            Object.keys(topics).forEach(top => {
-              const videoList = topics[top];
-              if (top === "__NO_TOPIC__") {
-                videoList.forEach(v => catContainer.appendChild(createTitleItem(v)));
-              } else {
-                // Topic without subcategory
-                const topicHead = document.createElement('div');
-                topicHead.className = 'category-header';
-                topicHead.style.paddingLeft = '2rem';
-                topicHead.style.fontSize = '0.85rem';
-                topicHead.style.color = '#ccc';
-                topicHead.innerHTML = `<i class="fas fa-folder me-1"></i> ${top} <span class="text-muted">(${videoList.length})</span>`;
-                catContainer.appendChild(topicHead);
-                videoList.forEach(v => {
-                  const item = createTitleItem(v);
-                  item.style.paddingLeft = '3.2rem';
-                  catContainer.appendChild(item);
-                });
-              }
-            });
+  titleList.innerHTML = '';
+  const cats = Object.keys(grouped).sort();
+  cats.forEach(cat => {
+    const isCatOpen = categoryStates[cat];
+    const catHeader = document.createElement('div');
+    catHeader.className = 'category-header';
+    catHeader.innerHTML = `<i class="fas fa-chevron-right chevron ${isCatOpen ? 'rotated' : ''}"></i> ${cat}`;
+    titleList.appendChild(catHeader);
+    const catContainer = document.createElement('div');
+    catContainer.className = 'category-items';
+    if (isCatOpen) catContainer.classList.add('expanded');
+
+    const subs = Object.keys(grouped[cat]).sort((a, b) => {
+      if (a === "__NO_SUB__") return -1;
+      if (b === "__NO_SUB__") return 1;
+      return a.localeCompare(b);
+    });
+
+    subs.forEach(sub => {
+      const topics = grouped[cat][sub];
+      if (sub === "__NO_SUB__") {
+        Object.keys(topics).forEach(top => {
+          const list = topics[top];
+          if (top === "__NO_TOPIC__") {
+            list.forEach(v => catContainer.appendChild(createTitleItem(v)));
           } else {
-            // Has subcategory
-            if (!subcategoryStates[cat][sub]) subcategoryStates[cat][sub] = false;
-            const isSubOpen = subcategoryStates[cat][sub];
-
-            const subHeader = document.createElement('div');
-            subHeader.className = 'category-header';
-            subHeader.style.paddingLeft = '2rem';
-            subHeader.style.fontSize = '0.85rem';
-            subHeader.style.color = '#ccc';
-            subHeader.innerHTML = `
-              <i class="fas fa-chevron-right chevron ${isSubOpen ? 'rotated' : ''}"></i>
-              ${sub} <span class="text-muted ms-1">(${Object.values(topics).flat().length})</span>
-            `;
-            catContainer.appendChild(subHeader);
-
-            const subContainer = document.createElement('div');
-            subContainer.className = 'category-items';
-            if (isSubOpen) subContainer.classList.add('expanded');
-
-            const topicList = Object.keys(topics).sort((a, b) => {
-              if (a === "__NO_TOPIC__") return -1;
-              if (b === "__NO_TOPIC__") return 1;
-              return a.localeCompare(b);
-            });
-
-            topicList.forEach(top => {
-              const videoList = topics[top];
-              if (top === "__NO_TOPIC__") {
-                // Videos directly under subcategory
-                videoList.forEach(v => {
-                  const item = createTitleItem(v);
-                  item.style.paddingLeft = '3.2rem';
-                  subContainer.appendChild(item);
-                });
-              } else {
-                // Has topic
-                if (!topicStates[cat][sub]) topicStates[cat][sub] = {};
-                if (topicStates[cat][sub][top] === undefined) topicStates[cat][sub][top] = false;
-                const isTopicOpen = topicStates[cat][sub][top];
-
-                const topicHeader = document.createElement('div');
-                topicHeader.className = 'category-header';
-                topicHeader.style.paddingLeft = '3.2rem';
-                topicHeader.style.fontSize = '0.8rem';
-                topicHeader.style.color = '#aaa';
-                topicHeader.innerHTML = `
-                  <i class="fas fa-chevron-right chevron ${isTopicOpen ? 'rotated' : ''}"></i>
-                  ${top} <span class="text-muted">(${videoList.length})</span>
-                `;
-                subContainer.appendChild(topicHeader);
-
-                const topicVideoContainer = document.createElement('div');
-                topicVideoContainer.className = 'category-items';
-                if (isTopicOpen) topicVideoContainer.classList.add('expanded');
-
-                videoList.forEach(v => {
-                  const item = createTitleItem(v);
-                  item.style.paddingLeft = '4.4rem';
-                  topicVideoContainer.appendChild(item);
-                });
-
-                subContainer.appendChild(topicVideoContainer);
-
-                topicHeader.addEventListener('click', (e) => {
-                  e.stopPropagation();
-                  const was = topicStates[cat][sub][top];
-                  topicStates[cat][sub][top] = !was;
-                  topicVideoContainer.classList.toggle('expanded', !was);
-                  topicHeader.querySelector('.chevron').classList.toggle('rotated', !was);
-                });
-              }
-            });
-
-            catContainer.appendChild(subContainer);
-            subHeader.addEventListener('click', (e) => {
-              e.stopPropagation();
-              const was = subcategoryStates[cat][sub];
-              subcategoryStates[cat][sub] = !was;
-              subContainer.classList.toggle('expanded', !was);
-              subHeader.querySelector('.chevron').classList.toggle('rotated', !was);
+            const topicHead = document.createElement('div');
+            topicHead.className = 'category-header';
+            topicHead.style.paddingLeft = '2rem';
+            topicHead.style.fontSize = '0.85rem';
+            topicHead.style.color = '#ccc';
+            topicHead.innerHTML = `<i class="fas fa-folder me-1"></i> ${top} <span class="text-muted">(${list.length})</span>`;
+            catContainer.appendChild(topicHead);
+            list.forEach(v => {
+              const item = createTitleItem(v);
+              item.style.paddingLeft = '3.2rem';
+              catContainer.appendChild(item);
             });
           }
         });
-
-        titleList.appendChild(catContainer);
-        catHeader.addEventListener('click', () => {
-          const was = categoryStates[cat];
-          categoryStates[cat] = !was;
-          catContainer.classList.toggle('expanded', !was);
-          catHeader.querySelector('.chevron').classList.toggle('rotated', !was);
-        });
-      });
-    }
-
-    function performSearch() {
-      const query = searchBox.value.trim().toLowerCase();
-      if (!query) {
-        renderGroupedList(videos, false);
-        clearSearchBtn.style.display = 'none';
-        return;
-      }
-
-      const filtered = videos.filter(v =>
-        v.title.toLowerCase().includes(query) ||
-        (v.category && v.category.toLowerCase().includes(query)) ||
-        (v.subcategory && v.subcategory.toLowerCase().includes(query)) ||
-        (v.topic && v.topic.toLowerCase().includes(query))
-      );
-
-      renderGroupedList(filtered, true);
-      clearSearchBtn.style.display = 'block';
-    }
-
-    searchBox.addEventListener('input', performSearch);
-    clearSearchBtn.addEventListener('click', () => {
-      searchBox.value = '';
-      clearSearchBtn.style.display = 'none';
-      renderGroupedList(videos);
-      searchBox.focus();
-    });
-
-    function validatePassword() {
-      if (videoPassword.value === VIDEO_PASSWORD) {
-        passwordModal.style.display = 'none';
-        if (pendingVideo) {
-          loadVideo(pendingVideo);
-          pendingVideo = null;
-        }
       } else {
-        passwordError.style.display = 'block';
-        setTimeout(() => passwordError.style.display = 'none', 2000);
+        if (subcategoryStates[cat][sub] === undefined) subcategoryStates[cat][sub] = false;
+        const isSubOpen = subcategoryStates[cat][sub];
+        const subHeader = document.createElement('div');
+        subHeader.className = 'category-header';
+        subHeader.style.paddingLeft = '2rem';
+        subHeader.style.fontSize = '0.85rem';
+        subHeader.style.color = '#ccc';
+        subHeader.innerHTML = `<i class="fas fa-chevron-right chevron ${isSubOpen ? 'rotated' : ''}"></i> ${sub} <span class="text-muted ms-1">(${Object.values(topics).flat().length})</span>`;
+        catContainer.appendChild(subHeader);
+        const subContainer = document.createElement('div');
+        subContainer.className = 'category-items';
+        if (isSubOpen) subContainer.classList.add('expanded');
+
+        const topicList = Object.keys(topics).sort((a, b) => {
+          if (a === "__NO_TOPIC__") return -1;
+          if (b === "__NO_TOPIC__") return 1;
+          return a.localeCompare(b);
+        });
+
+        topicList.forEach(top => {
+          const list = topics[top];
+          if (top === "__NO_TOPIC__") {
+            list.forEach(v => {
+              const item = createTitleItem(v);
+              item.style.paddingLeft = '3.2rem';
+              subContainer.appendChild(item);
+            });
+          } else {
+            if (!topicStates[cat][sub]) topicStates[cat][sub] = {};
+            if (topicStates[cat][sub][top] === undefined) topicStates[cat][sub][top] = false;
+            const isTopicOpen = topicStates[cat][sub][top];
+            const topicHeader = document.createElement('div');
+            topicHeader.className = 'category-header';
+            topicHeader.style.paddingLeft = '3.2rem';
+            topicHeader.style.fontSize = '0.8rem';
+            topicHeader.style.color = '#aaa';
+            topicHeader.innerHTML = `<i class="fas fa-chevron-right chevron ${isTopicOpen ? 'rotated' : ''}"></i> ${top} <span class="text-muted">(${list.length})</span>`;
+            subContainer.appendChild(topicHeader);
+            const topicVideoContainer = document.createElement('div');
+            topicVideoContainer.className = 'category-items';
+            if (isTopicOpen) topicVideoContainer.classList.add('expanded');
+            list.forEach(v => {
+              const item = createTitleItem(v);
+              item.style.paddingLeft = '4.4rem';
+              topicVideoContainer.appendChild(item);
+            });
+            subContainer.appendChild(topicVideoContainer);
+            topicHeader.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const was = topicStates[cat][sub][top];
+              topicStates[cat][sub][top] = !was;
+              topicVideoContainer.classList.toggle('expanded', !was);
+              topicHeader.querySelector('.chevron').classList.toggle('rotated', !was);
+            });
+          }
+        });
+        catContainer.appendChild(subContainer);
+        subHeader.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const was = subcategoryStates[cat][sub];
+          subcategoryStates[cat][sub] = !was;
+          subContainer.classList.toggle('expanded', !was);
+          subHeader.querySelector('.chevron').classList.toggle('rotated', !was);
+        });
       }
-    }
-
-    submitPassword.addEventListener('click', validatePassword);
-    videoPassword.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') validatePassword();
     });
-    cancelPassword.addEventListener('click', () => {
-      passwordModal.style.display = 'none';
+    titleList.appendChild(catContainer);
+    catHeader.addEventListener('click', () => {
+      const was = categoryStates[cat];
+      categoryStates[cat] = !was;
+      catContainer.classList.toggle('expanded', !was);
+      catHeader.querySelector('.chevron').classList.toggle('rotated', !was);
+    });
+  });
+}
+
+// Search
+function performSearch() {
+  const query = searchBox.value.trim().toLowerCase();
+  if (!query) {
+    renderGroupedList(videos, false);
+    clearSearchBtn.style.display = 'none';
+    return;
+  }
+  const filtered = videos.filter(v =>
+    v.title.toLowerCase().includes(query) ||
+    (v.category && v.category.toLowerCase().includes(query)) ||
+    (v.subcategory && v.subcategory.toLowerCase().includes(query)) ||
+    (v.topic && v.topic.toLowerCase().includes(query))
+  );
+  renderGroupedList(filtered, true);
+  clearSearchBtn.style.display = 'block';
+}
+searchBox.addEventListener('input', performSearch);
+clearSearchBtn.addEventListener('click', () => {
+  searchBox.value = '';
+  clearSearchBtn.style.display = 'none';
+  renderGroupedList(videos);
+  searchBox.focus();
+});
+
+// Password
+function validatePassword() {
+  if (videoPassword.value === VIDEO_PASSWORD) {
+    passwordModal.style.display = 'none';
+    if (pendingVideo) {
+      loadVideo(pendingVideo);
       pendingVideo = null;
-    });
+    }
+  } else {
+    passwordError.style.display = 'block';
+    setTimeout(() => passwordError.style.display = 'none', 2000);
+  }
+}
+submitPassword.addEventListener('click', validatePassword);
+videoPassword.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') validatePassword();
+});
+cancelPassword.addEventListener('click', () => {
+  passwordModal.style.display = 'none';
+  pendingVideo = null;
+});
 
-    renderGroupedList(videos);
-    searchBox.focus();
-  </script>
+// Popup toggle
+popupToggle.addEventListener('change', (e) => {
+  usePopupMode = e.target.checked;
+});
+
+// Close popup manually
+closePopupBtn.addEventListener('click', () => {
+  videoPopupModal.style.display = 'none';
+  popupVideoFrame.src = '';
+  usePopupMode = false;
+  popupToggle.checked = false;
+  if (currentVideo) {
+    loadVideo(currentVideo);
+  }
+});
+
+// Init
+renderGroupedList(videos);
+searchBox.focus();
+</script>
 </body>
 </html>
