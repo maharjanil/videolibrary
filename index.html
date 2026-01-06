@@ -528,10 +528,18 @@ const videos = [
   { title: "Video 1_Welcome", type: "drive", id: "1kh2OvxLqgwCQopKsrT7yjoRs_Ycpj6Xp", protected: true, category: "Sketch Note-Workbook", subcategory: "Video"},
   { title: "Video 1_Welcome", type: "drive", id: "1kh2OvxLqgwCQopKsrT7yjoRs_Ycpj6Xp", protected: true, category: "Sketch Note-Workbook", subcategory: "Video"},
   
+  { title: "Blocking workflow & simplifying animations | Koushik Chatterjee", type: "youtube", url: "https://youtu.be/rWxeZbwEV70", category: "Maya Animation", subcategory: "Koushik Chatterjee" },
 
   
-  
-  { title: "Blocking workflow & simplifying animations | Koushik Chatterjee", type: "youtube", url: "https://youtu.be/rWxeZbwEV70", category: "Maya Animation", subcategory: "Koushik Chatterjee" }
+  // ✅ YOUR PDF FILE — ADDED HERE
+  {
+    title: "Sketch Note-Workbook",
+    type: "pdf",
+    id: "11T0Eht3SONH1VkehNeNefX2lVg7panPH",
+    protected: false,
+    category: "Sketch Note-Workbook",
+    subcategory: "PDF"
+  }
 ];
 
 const VIDEO_PASSWORD = "Animator";
@@ -567,23 +575,25 @@ function getYouTubeId(url) {
 }
 
 // Helper: thumbnail
-function getThumbnailUrl(video) {
-  if (video.type === "youtube") {
-    const id = getYouTubeId(video.url);
+function getThumbnailUrl(item) {
+  if (item.type === "youtube") {
+    const id = getYouTubeId(item.url);
     return id ? `https://img.youtube.com/vi/${id}/mqdefault.jpg` : null;
-  } else if (video.type === "drive" && video.id) {
-    return `https://drive.google.com/thumbnail?id=${video.id}&sz=w640`;
+  } else if (item.type === "drive" && item.id) {
+    return `https://drive.google.com/thumbnail?id=${item.id}&sz=w640`;
+  } else if (item.type === "pdf") {
+    return null; // No thumbnail for PDFs
   }
   return null;
 }
 
-// Helper: embed URL
-function getEmbedUrl(video) {
-  if (video.type === "youtube") {
-    const id = getYouTubeId(video.url);
+// Helper: embed URL (works for video, drive, and PDF)
+function getEmbedUrl(item) {
+  if (item.type === "youtube") {
+    const id = getYouTubeId(item.url);
     return id ? `https://www.youtube.com/embed/${id}?autoplay=1` : null;
-  } else if (video.type === "drive" && video.id) {
-    return `https://drive.google.com/file/d/${video.id}/preview`;
+  } else if ((item.type === "drive" || item.type === "pdf") && item.id) {
+    return `https://drive.google.com/file/d/${item.id}/preview`;
   }
   return null;
 }
@@ -633,7 +643,7 @@ function updateTopics() {
   });
 }
 
-// Create video card
+// Create video/PDF card
 function createVideoCard(video) {
   const card = document.createElement('div');
   card.className = 'video-card';
@@ -644,9 +654,24 @@ function createVideoCard(video) {
     video.topic
   ].filter(Boolean).join(' • ');
 
+  let thumbHtml = '';
+  if (thumbUrl) {
+    thumbHtml = `<img src="${thumbUrl}" alt="Thumbnail">`;
+  } else {
+    let iconClass = "fa-video";
+    if (video.type === "pdf") {
+      iconClass = "fa-file-pdf";
+    } else if (video.type === "youtube") {
+      iconClass = "fa-youtube";
+    } else {
+      iconClass = "fa-google-drive";
+    }
+    thumbHtml = `<div class="placeholder"><i class="fas ${iconClass}"></i></div>`;
+  }
+
   card.innerHTML = `
     <div class="card-thumb">
-      ${thumbUrl ? `<img src="${thumbUrl}" alt="Thumbnail">` : `<div class="placeholder"><i class="fas fa-video"></i></div>`}
+      ${thumbHtml}
       ${video.protected ? `<div class="protected-badge"><i class="fas fa-lock"></i></div>` : ''}
     </div>
     <div class="card-content">
@@ -655,6 +680,7 @@ function createVideoCard(video) {
     </div>
   `;
 
+  // Handle thumbnail load/fail
   if (thumbUrl) {
     const img = card.querySelector('img');
     img.onload = () => img.classList.add('loaded');
@@ -741,7 +767,7 @@ function renderPagination(totalPages) {
   paginationEl.appendChild(next);
 }
 
-// Open video in popup
+// Open video or PDF
 function openVideo(video) {
   if (video.protected) {
     currentVideo = video;
@@ -750,14 +776,14 @@ function openVideo(video) {
     passwordError.style.display = 'none';
     videoPassword.focus();
   } else {
-    playVideoInPopup(video);
+    playInPopup(video);
   }
 }
 
-function playVideoInPopup(video) {
+function playInPopup(video) {
   const url = getEmbedUrl(video);
   if (!url) {
-    alert("Video not available.");
+    alert("Content not available.");
     return;
   }
   popupTitle.textContent = video.title;
@@ -770,7 +796,7 @@ function validatePassword() {
   if (videoPassword.value === VIDEO_PASSWORD) {
     passwordModal.style.display = 'none';
     if (currentVideo) {
-      playVideoInPopup(currentVideo);
+      playInPopup(currentVideo);
       currentVideo = null;
     }
   } else {
