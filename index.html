@@ -582,15 +582,36 @@ protected: false,
 category: "Sketch Note-Workbook",
 subcategory: "PDF"
 },
-// ✅ NEW PLAYLIST ENTRY
+// ✅ UPDATED PLAYLIST ENTRY WITH firstVideoId
 {
 title: "Animation Tutorials & Demos",
 type: "youtube-playlist",
 id: "PL6f_1l1ybQdM8B39CnKP0MJ1ygXfuNAGQ",
+firstVideoId: "IhJor3glwYo", // ← ADDED
 protected: false,
-category: "Animation Mentor",
-subcategory: "Animation Tutorials ",
+category: "Full Playlist",
+subcategory: "Animation Mentor"
+},
+
+{
+title: "Animation Study",
+type: "youtube-playlist",
+id: "PLR_ekzxkJ9GHj5iWy0UPcYOz2u0yZALge",
+firstVideoId: "7bq5qLDC4h4", // ← ADDED
+protected: false,
+category: "Full Playlist",
+subcategory: "Animation Study",
 topic: "Full Playlist"
+},
+
+{
+title: "Animation Body Mechanics Tutorial",
+type: "youtube-playlist",
+id: "PLR_ekzxkJ9GFqUsRubbXNKw3udi6U2LKc",
+firstVideoId: "Nm8WwXooNSQ", // ← ADDED
+protected: false,
+category: "Full Playlist",
+subcategory: "Body Mechanics"
 }
 ];
 
@@ -626,17 +647,18 @@ const match = url.trim().match(regExp);
 return (match && match[2].length === 11) ? match[2] : null;
 }
 
-// Helper: thumbnail
+// ✅ UPDATED: getThumbnailUrl now supports playlist thumbnails via firstVideoId
 function getThumbnailUrl(item) {
 if (item.type === "youtube") {
 const id = getYouTubeId(item.url);
 return id ? `https://img.youtube.com/vi/${id}/mqdefault.jpg` : null;
-} else if (item.type === "drive" && item.id) {
-return `https://drive.google.com/thumbnail?id=${item.id}&sz=w640`;
-} else if (item.type === "pdf") {
-return null;
 } else if (item.type === "youtube-playlist") {
-return null; // no standard thumbnail without API
+if (item.firstVideoId) {
+return `https://img.youtube.com/vi/${item.firstVideoId}/mqdefault.jpg`;
+}
+return null;
+} else if ((item.type === "drive" || item.type === "pdf") && item.id) {
+return `https://drive.google.com/thumbnail?id=${item.id}&sz=w640`;
 }
 return null;
 }
