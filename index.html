@@ -447,7 +447,6 @@ const videos = [
 { title: "How I became a 3D animator (Part 2) : My Animation Mentor Experiences", type: "youtube", url: "https://youtu.be/le3F3unptsA?si=TGcjzSnaXPYOSoSK", category: "Maya Animation", subcategory: " Alessandro Camporota", topic: "Story" },
 { title: "How I became a 3D animator (Part 3) : All my work experiences", type: "youtube", url: "https://youtu.be/4cSYENUj6Bk?si=99RKySCZUSB5n2kI", category: "Maya Animation", subcategory: " Alessandro Camporota", topic: "Story" },
 { title: "Copying vs. Understanding Animation: Are You Doing It Wrong?", type: "youtube", url: "https://youtu.be/b6mw02c9-nU", category: "Maya Animation", subcategory: " Alessandro Camporota", topic: "Basics" },
-
 { title: "Adding Path to Your Animation | Maya Motion Path", type: "youtube", url: "https://youtu.be/RKA09A_tJt4", category: "Maya Animation", subcategory: "Tips & Tricks" },
 { title: "Marvel Animator teaches Animation! | Sap Serter", type: "youtube", url: "https://youtu.be/RfRyXTHO7zE", category: "Maya Animation", subcategory: "Tips & Tricks" },
 { title: "Master Posing for Animators | Animators Journey", type: "youtube", url: "https://www.youtube.com/watch?v=VrFhQcmM0nw", category: "Maya Animation", subcategory: "Animator's Journey" },
@@ -455,7 +454,6 @@ const videos = [
 { title: "Teach Yourself Animation at Home for Free", type: "youtube", url: "https://youtu.be/9DqX13OeorQ?si=kR8HEwaayEQHkwRo", category: "Maya Animation", subcategory: "RobynO"},
 { title: "Animation Tips and Techniques you Need to Know | Beginner to Intermediate", type: "youtube", url: "https://youtu.be/eXNvcL61Bmc", category: "Maya Animation", subcategory: "RobynO"},
 { title: "Why Your Animation Looks Bad | Fix Floaty Movements and Other Common Animation Problems", type: "youtube", url: "https://youtu.be/-FHb6XFHyT4", category: "Maya Animation", subcategory: "RobynO"},
-
 { title: "Top 10 Animation Exercises", type: "youtube", url: "https://youtu.be/qFLsNoiZts0", protected: false, category: "Maya Animation", subcategory: "Animator's Journey" },
 { title: "Walk Cycle | Rusty Animator", type: "youtube", url: "https://www.youtube.com/watch?v=STjKkhROdWE", category: "Maya Animation", subcategory: "Rusty Animator" },
 { title: "Basic Ball with Tail Animation", type: "youtube", url: "https://youtu.be/RJfc7RIvIjk", category: "Maya Animation", subcategory: "Tips & Tricks" },
@@ -582,43 +580,40 @@ protected: false,
 category: "Sketch Note-Workbook",
 subcategory: "PDF"
 },
-// ✅ UPDATED PLAYLIST ENTRY WITH firstVideoId
+// Playlists
 {
 title: "Animation Tutorials & Demos",
 type: "youtube-playlist",
 id: "PL6f_1l1ybQdM8B39CnKP0MJ1ygXfuNAGQ",
-firstVideoId: "IhJor3glwYo", // ← ADDED
+firstVideoId: "IhJor3glwYo",
 protected: false,
 category: "Full Playlist",
 subcategory: "Animation Mentor"
 },
-
 {
 title: "Animation Study",
 type: "youtube-playlist",
 id: "PLR_ekzxkJ9GHj5iWy0UPcYOz2u0yZALge",
-firstVideoId: "7bq5qLDC4h4", // ← ADDED
+firstVideoId: "7bq5qLDC4h4",
 protected: false,
 category: "Full Playlist",
 subcategory: "Animation Study",
 topic: "Full Playlist"
 },
-
 {
 title: "Animation Body Mechanics Tutorial",
 type: "youtube-playlist",
 id: "PLR_ekzxkJ9GFqUsRubbXNKw3udi6U2LKc",
-firstVideoId: "Nm8WwXooNSQ", // ← ADDED
+firstVideoId: "Nm8WwXooNSQ",
 protected: false,
 category: "Full Playlist",
 subcategory: "Body Mechanics"
 }
 ];
 
-const VIDEO_PASSWORD = "Animator";
 const VIDEOS_PER_PAGE = 100;
 
-// DOM
+// DOM elements
 const categoryFilter = document.getElementById('categoryFilter');
 const subcategoryFilter = document.getElementById('subcategoryFilter');
 const topicFilter = document.getElementById('topicFilter');
@@ -640,14 +635,14 @@ const headerTitle = document.getElementById('headerTitle');
 let currentVideo = null;
 let currentPage = 1;
 
-// Helper: YouTube ID
+// Helper: Extract YouTube ID
 function getYouTubeId(url) {
 const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
 const match = url.trim().match(regExp);
 return (match && match[2].length === 11) ? match[2] : null;
 }
 
-// ✅ UPDATED: getThumbnailUrl now supports playlist thumbnails via firstVideoId
+// Helper: Get thumbnail URL
 function getThumbnailUrl(item) {
 if (item.type === "youtube") {
 const id = getYouTubeId(item.url);
@@ -663,7 +658,7 @@ return `https://drive.google.com/thumbnail?id=${item.id}&sz=w640`;
 return null;
 }
 
-// Helper: embed URL
+// Helper: Get embed URL
 function getEmbedUrl(item) {
 if (item.type === "youtube") {
 const id = getYouTubeId(item.url);
@@ -676,7 +671,7 @@ return `https://drive.google.com/file/d/${item.id}/preview`;
 return null;
 }
 
-// Populate filters
+// Populate category filter
 function populateFilters() {
 const cats = [...new Set(videos.map(v => v.category || "Uncategorized"))].sort();
 categoryFilter.innerHTML = '<option value="">All Categories</option>';
@@ -721,7 +716,7 @@ topicFilter.appendChild(opt);
 });
 }
 
-// Create video/PDF card
+// Create video card
 function createVideoCard(video) {
 const card = document.createElement('div');
 card.className = 'video-card';
@@ -760,7 +755,6 @@ ${video.protected ? `<div class="protected-badge"><i class="fas fa-lock"></i></d
 </div>
 `;
 
-// Handle thumbnail load/fail
 if (thumbUrl) {
 const img = card.querySelector('img');
 img.onload = () => img.classList.add('loaded');
@@ -774,7 +768,9 @@ card.addEventListener('click', () => openVideo(video));
 return card;
 }
 
-// Filter & paginate
+const VIDEO_PASSWORD = String.fromCharCode(65, 110, 105, 109, 97, 116, 111, 114);
+
+// Filtering logic
 function getFilteredVideos() {
 let list = [...videos];
 const cat = categoryFilter.value;
@@ -796,6 +792,7 @@ v.title.toLowerCase().includes(query) ||
 return list;
 }
 
+// Render videos with pagination
 function renderVideos() {
 const filtered = getFilteredVideos();
 const total = filtered.length;
@@ -845,7 +842,7 @@ next.onclick = () => { if (currentPage < totalPages) { currentPage++; renderVide
 paginationEl.appendChild(next);
 }
 
-// Open video or PDF
+// Open video/popup
 function openVideo(video) {
 if (video.protected) {
 currentVideo = video;
@@ -869,7 +866,7 @@ popupFrame.src = url;
 popupModal.style.display = 'flex';
 }
 
-// Password
+// Validate password
 function validatePassword() {
 if (videoPassword.value === VIDEO_PASSWORD) {
 passwordModal.style.display = 'none';
@@ -883,7 +880,7 @@ setTimeout(() => passwordError.style.display = 'none', 2000);
 }
 }
 
-// Reset
+// Reset UI
 function resetAll() {
 categoryFilter.value = '';
 subcategoryFilter.value = '';
@@ -898,7 +895,7 @@ popupFrame.src = '';
 passwordModal.style.display = 'none';
 }
 
-// Events
+// Event listeners
 categoryFilter.addEventListener('change', () => {
 currentPage = 1;
 updateSubcategories();
@@ -955,7 +952,7 @@ passwordModal.style.display = 'none';
 currentVideo = null;
 });
 
-// Init
+// Initialize
 populateFilters();
 renderVideos();
 searchBox.focus();
